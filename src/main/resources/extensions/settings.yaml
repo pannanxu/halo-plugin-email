@@ -1,7 +1,7 @@
 apiVersion: v1alpha1
 kind: Setting
 metadata:
-  name: starter-settings
+  name: halo-plugin-email-settings
 spec:
   forms:
     - group: basic

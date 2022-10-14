@@ -1,0 +1,12 @@
+apiVersion: io.mvvm.halo.plugins.email/v1alpha1
+kind: EmailConfigExtension
+metadata:
+  name: config
+enable: true
+formName: Pan
+host: smtp.qq.com
+port: 465
+username: admmumu@qq.com
+password: rwsxalcfacvbeaej
+protocol: smtps
+startTls: true

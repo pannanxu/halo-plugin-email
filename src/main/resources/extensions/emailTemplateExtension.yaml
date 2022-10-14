@@ -1,0 +1,7 @@
+apiVersion: io.mvvm.halo.plugins.email/v1alpha1
+kind: EmailTemplateExtension
+metadata:
+  name: comment
+spec:
+  template: "<h1 th:text=\"${post.spec.title}\"></h1>"
+  enable: true

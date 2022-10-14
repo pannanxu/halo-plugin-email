@@ -1,30 +1,33 @@
 apiVersion: v1alpha1
 kind: Role
 metadata:
-  name: role-template-apple-view
+  name: role-template-email-config-view
   labels:
     halo.run/role-template: "true"
   annotations:
-    rbac.authorization.halo.run/module: "Apple Management"
-    rbac.authorization.halo.run/ui-permissions: "[\"plugin:apples:view\"]"
-    rbac.authorization.halo.run/display-name: "苹果查看"
+    rbac.authorization.halo.run/module: "Email Config"
+    rbac.authorization.halo.run/display-name: "Email配置"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:halo-plugin-email:view"]
 rules:
-  - apiGroups: [ "plugins.api.halo.run" ]
-    resources: [ "plugins/apples" ]
+  - apiGroups: [ "" ]
+    resources: [ "emailConfigExtensions" ]
     verbs: [ "get", "list" ]
 ---
 apiVersion: v1alpha1
 kind: Role
 metadata:
-  name: role-template-apple-manage
+  name: role-template-email-config-manage
   labels:
     halo.run/role-template: "true"
   annotations:
-    rbac.authorization.halo.run/dependencies: "[\"role-template-apple-view\"]"
-    rbac.authorization.halo.run/ui-permissions: "[\"plugin:apples:delete\",\"plugin:apples:update\"]"
-    rbac.authorization.halo.run/module: "Apple Management"
-    rbac.authorization.halo.run/display-name: "苹果管理"
+    rbac.authorization.halo.run/module: "Email Config"
+    rbac.authorization.halo.run/display-name: "Email配置"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:halo-plugin-email:manage"]
+    rbac.authorization.halo.run/dependencies: |
+      ["role-template-email-config-view"]
 rules:
-  - apiGroups: [ "plugins.api.halo.run" ]
-    resources: [ "plugins/apples" ]
+  - apiGroups: [ "" ]
+    resources: [ "emailConfigExtensions" ]
     verbs: [ "create", "patch", "update", "delete", "deletecollection" ]
