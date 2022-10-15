@@ -8,7 +8,7 @@ spec:
       label: 基本设置
       formSchema:
         - $formkit: checkbox
-          help: 是否启用邮件通知.
+          help: "测试连接打开地址: http://ip:port/apis/api.plugin.halo.run/v1alpha1/plugins/halo-plugin-email/io.mvvm.halo.plugins.email/testConnection"
           label: 启用邮件通知
           name: enable
           validation: required
