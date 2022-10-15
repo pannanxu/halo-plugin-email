@@ -31,16 +31,21 @@ public class EMailServiceImpl extends AbstractMailService {
         processManager.getProcessFlux(payload.getEndpoint())
                 .publishOn(Schedulers.boundedElastic())
                 .flatMap(process -> process.process(payload.getData()))
-                .subscribe(email -> sendMailTemplate(mimeMessageHelper -> {
-                    try {
-                        mimeMessageHelper.setTo(email.getTo());
-                        mimeMessageHelper.setSubject(email.getSubject());
-                        mimeMessageHelper.setText(email.getContent(), true);
-                    } catch (MessagingException e) {
-                        log.error("构建邮件通知内容异常: {}", e.getMessage(), e);
-                        throw new RuntimeException(e);
-                    }
-                }));
+                .doOnNext(this::doSendEmail)
+                .doOnError(err -> log.error("发送邮件异常: {}", err.getMessage(), err))
+                .subscribe();
+    }
+
+    void doSendEmail(EmailMessage email) {
+        sendMailTemplate(mimeMessageHelper -> {
+            try {
+                mimeMessageHelper.setTo(email.getTo());
+                mimeMessageHelper.setSubject(email.getSubject());
+                mimeMessageHelper.setText(email.getContent(), true);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
