@@ -4,19 +4,19 @@ import { IconGrid } from "@halo-dev/components";
 import "./styles/index.css";
 
 export default definePlugin({
-  name: "PluginStarter",
+  name: "halo-plugin-email",
   components: [],
   routes: [
     {
-      path: "/hello-world",
+      path: "/halo-plugin-email-config",
       component: BasicLayout,
       children: [
         {
           path: "",
-          name: "HelloWorld",
+          name: "Email",
           component: DefaultView,
           meta: {
-            permissions: ["plugin:apples:view"],
+            // permissions: ["plugin:halo-plugin-email:view"],
           },
         },
       ],
@@ -24,11 +24,11 @@ export default definePlugin({
   ],
   menus: [
     {
-      name: "From PluginStarter",
+      name: "From halo-plugin-email",
       items: [
         {
-          name: "HelloWorld",
-          path: "/hello-world",
+          name: "Email",
+          path: "/halo-plugin-email-config",
           icon: IconGrid,
         },
       ],

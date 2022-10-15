@@ -7,6 +7,6 @@ formName: Pan
 host: smtp.qq.com
 port: 465
 username: admmumu@qq.com
-password: rwsxalcfacvbeaej
+password: todo
 protocol: smtps
 startTls: true

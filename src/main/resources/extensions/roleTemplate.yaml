@@ -6,7 +6,7 @@ metadata:
     halo.run/role-template: "true"
   annotations:
     rbac.authorization.halo.run/module: "Email Config"
-    rbac.authorization.halo.run/display-name: "Email配置"
+    rbac.authorization.halo.run/display-name: "Email配置查看"
     rbac.authorization.halo.run/ui-permissions: |
       ["plugin:halo-plugin-email:view"]
 rules:
@@ -22,7 +22,7 @@ metadata:
     halo.run/role-template: "true"
   annotations:
     rbac.authorization.halo.run/module: "Email Config"
-    rbac.authorization.halo.run/display-name: "Email配置"
+    rbac.authorization.halo.run/display-name: "Email配置管理"
     rbac.authorization.halo.run/ui-permissions: |
       ["plugin:halo-plugin-email:manage"]
     rbac.authorization.halo.run/dependencies: |

@@ -19,7 +19,7 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: "src/index.ts",
-      name: "PluginStarter",
+      name: "halo-plugin-email",
       formats: ["iife"],
       fileName: () => "main.js",
     },
@@ -31,6 +31,8 @@ export default defineConfig({
         "vue-router",
       ],
       output: {
+        /* 解决 ${build.lib.name} "-" 无法build */
+        extend: true,
         globals: {
           vue: "Vue",
           "vue-router": "VueRouter",
