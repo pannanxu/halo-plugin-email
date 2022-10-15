@@ -16,7 +16,6 @@ const data = reactive({
 });
 
 const handleSubmit = async () => {
-  // TODO request api
   console.log("handleSubmit...", data)
 }
 
@@ -24,7 +23,8 @@ const handleSubmit = async () => {
 <template>
   <div class="bg-white p-4 sm:px-6">
     <div class="w-1/3">
-      <FormKit
+      Hello Email!!!
+<!--      <FormKit
         id="email-config-form"
         name="email-config-form"
         :actions="false"
@@ -98,7 +98,7 @@ const handleSubmit = async () => {
         @click="$formkit.submit('email-config-form')"
       >
         保存
-      </VButton>
+      </VButton>-->
     </div>
   </div>
 </template>

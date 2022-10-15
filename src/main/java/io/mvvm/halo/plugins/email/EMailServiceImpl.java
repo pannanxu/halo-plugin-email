@@ -2,11 +2,12 @@ package io.mvvm.halo.plugins.email;
 
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import run.halo.app.extension.ConfigMap;
 import run.halo.app.extension.ReactiveExtensionClient;
+import run.halo.app.infra.utils.JsonUtils;
 
 /**
  * @description:
@@ -43,12 +44,21 @@ public class EMailServiceImpl extends AbstractMailService {
     }
 
     @Override
-    protected Mono<EmailConfigExtension> getConfigExtension() {
-        return client.get(EmailConfigExtension.class, "config");
+    protected Mono<EmailServerConfig> getConfigExtension() {
+        return client.get(ConfigMap.class, EmailPluginConst.emailServerSettingName)
+                .map(ConfigMap::getData)
+                .flatMap(config -> {
+                    String basic = config.get("basic");
+                    EmailServerConfig extension = JsonUtils.jsonToObject(basic, EmailServerConfig.class);
+                    return Mono.just(extension);
+                });
     }
 
-    @EventListener
-    public void event(EmailConfigExtension extension) {
-        clearCache();
+    @Override
+    public void refreshCache(ConfigMap configMap) {
+        if (EmailPluginConst.emailServerSettingName.equals(configMap.getMetadata().getName())) {
+            log.info("刷新 email server configMap");
+            clearCache();
+        }
     }
 }

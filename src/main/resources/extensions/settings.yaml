@@ -7,24 +7,44 @@ spec:
     - group: basic
       label: 基本设置
       formSchema:
-        - $formkit: text
-          help: This will be used for your account.
-          label: Email
-          name: email
-          validation: required|email
-        - $formkit: text
-          label: 访问链接
-          name: url
-    - group: advanced
-      label: 高级设置
-      formSchema:
-        - $formkit: text
-          help: This will be used for your theme.
-          label: color
-          name: color
+        - $formkit: checkbox
+          help: 是否启用邮件通知.
+          label: 启用邮件通知
+          name: enable
           validation: required
-        - $formkit: color
-          help: This will be used for your theme.
-          label: color
-          name: color
+          value: false
+        - $formkit: text
+          label: FormName
+          name: formName
           validation: required
+        - $formkit: text
+          help: smtp.qq.com.
+          label: Host
+          name: host
+          validation: required
+        - $formkit: text
+          help: 465.
+          label: Port
+          name: port
+          validation: required
+        - $formkit: text
+          help: username.
+          label: Username
+          name: username
+          validation: required
+        - $formkit: text
+          help: password.
+          label: Password
+          name: password
+          validation: required
+        - $formkit: text
+          help: smtps, smtp.
+          label: Protocol
+          name: protocol
+          validation: required
+        - $formkit: checkbox
+          help: startTls.
+          label: startTls
+          name: startTls
+          validation: required
+          value: false

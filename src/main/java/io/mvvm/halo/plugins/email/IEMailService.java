@@ -1,6 +1,7 @@
 package io.mvvm.halo.plugins.email;
 
 import reactor.core.publisher.Mono;
+import run.halo.app.extension.ConfigMap;
 
 /**
  * @description:
@@ -12,4 +13,5 @@ public interface IEMailService {
 
     void send(EMailRequestPayload payload);
 
+    void refreshCache(ConfigMap configMap);
 }

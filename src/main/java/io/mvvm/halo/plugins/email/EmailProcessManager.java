@@ -44,7 +44,6 @@ public class EmailProcessManager {
 
     public Flux<ExtensionTemplateProcess> getProcessFlux(String endpoint) {
         Set<ExtensionTemplateProcess> process = getProcess(endpoint);
-        System.out.println(process);
         return Flux.fromIterable(process);
     }
 }

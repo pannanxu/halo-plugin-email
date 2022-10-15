@@ -1,7 +1,7 @@
 package io.mvvm.halo.plugins.email.process;
 
+import io.mvvm.halo.plugins.email.AbstractTemplateProcess;
 import io.mvvm.halo.plugins.email.EMailTemplateEngineManager;
-import io.mvvm.halo.plugins.email.ExtensionTemplateProcess;
 import io.mvvm.halo.plugins.email.EMallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +14,10 @@ import run.halo.app.core.extension.Post;
  * @author: pan
  **/
 @Slf4j
-public class PostExtensionTemplateProcess implements ExtensionTemplateProcess {
-
-    private final EMailTemplateEngineManager engineManager;
+public class PostExtensionTemplateProcess extends AbstractTemplateProcess {
 
     public PostExtensionTemplateProcess(EMailTemplateEngineManager engineManager) {
-        this.engineManager = engineManager;
+        setEngineManager(engineManager);
     }
 
     @Override
@@ -32,7 +30,7 @@ public class PostExtensionTemplateProcess implements ExtensionTemplateProcess {
         if (extension instanceof Post comment) {
             Context context = new Context();
             context.setVariable("post", comment);
-            String process = engineManager.getTemplateEngine().process(ExtensionTemplateProcessEnum.Comment.getValue(), context);
+            String process = process(ExtensionTemplateProcessEnum.Comment.getValue(), context);
             return Flux.just(new EmailMessage("2369710264@qq.com", "收到新的评论", process));
         }
         return Flux.empty();

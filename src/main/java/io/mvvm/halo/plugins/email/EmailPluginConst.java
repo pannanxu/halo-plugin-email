@@ -6,5 +6,6 @@ package io.mvvm.halo.plugins.email;
  **/
 public interface EmailPluginConst {
 
+    String emailServerSettingName = "halo-plugin-email-settings";
 
 }

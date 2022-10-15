@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -26,12 +27,14 @@ public abstract class AbstractMailService implements IEMailService {
 
     private volatile JavaMailSender cachedMailSender;
 
+    private final AtomicReference<EmailServerConfig> configRef = new AtomicReference<>();
+
     /**
      * Test connection with email server.
      */
     @Override
     public Mono<Boolean> testConnection() {
-        return getConfigExtension().filter(EmailConfigExtension::isEnable)
+        return getConfigExtension().filter(EmailServerConfig::isEnable)
                 .flatMap(config -> {
                     JavaMailSender javaMailSender = getMailSender(config);
                     if (javaMailSender instanceof JavaMailSenderImpl mailSender) {
@@ -58,7 +61,7 @@ public abstract class AbstractMailService implements IEMailService {
             log.info("Callback is null, skip to send email");
             return;
         }
-        getConfigExtension().filter(EmailConfigExtension::isEnable)
+        getConfigExtension().filter(EmailServerConfig::isEnable)
                 .doOnNext(config -> {
                     // get mail sender
                     JavaMailSender mailSender = getMailSender(config);
@@ -94,14 +97,20 @@ public abstract class AbstractMailService implements IEMailService {
      * @return java mail sender
      */
     @NonNull
-    private JavaMailSender getMailSender(EmailConfigExtension config) {
+    private JavaMailSender getMailSender(EmailServerConfig newConfig) {
+        // 如果配置已修改则更新缓存中的 cachedMailSender
+        EmailServerConfig oldConfig = configRef.getAndUpdate(emailServerConfig -> newConfig);
+        if (null != oldConfig && !oldConfig.equals(newConfig)) {
+            clearCache();
+        }
+
         if (this.cachedMailSender == null) {
             synchronized (IEMailService.class) {
                 if (this.cachedMailSender == null) {
                     // create mail sender factory
                     MailSenderFactory mailSenderFactory = new MailSenderFactory();
                     // get mail sender
-                    this.cachedMailSender = mailSenderFactory.getMailSender(getMailProperties(config));
+                    this.cachedMailSender = mailSenderFactory.getMailSender(getMailProperties(newConfig));
                 }
             }
         }
@@ -115,7 +124,7 @@ public abstract class AbstractMailService implements IEMailService {
      * @return from-name internet address
      * @throws UnsupportedEncodingException throws when you give a wrong character encoding
      */
-    private synchronized InternetAddress getFromAddress(@NonNull JavaMailSender javaMailSender, EmailConfigExtension config)
+    private synchronized InternetAddress getFromAddress(@NonNull JavaMailSender javaMailSender, EmailServerConfig config)
             throws UnsupportedEncodingException {
         Assert.notNull(javaMailSender, "Java mail sender must not be null");
 
@@ -138,7 +147,7 @@ public abstract class AbstractMailService implements IEMailService {
      * @return mail properties
      */
     @NonNull
-    private synchronized MailProperties getMailProperties(EmailConfigExtension config) {
+    private synchronized MailProperties getMailProperties(EmailServerConfig config) {
         MailProperties mailProperties = new MailProperties();
         mailProperties.setHost(config.getHost());
         mailProperties.setPort(config.getPort());
@@ -159,5 +168,5 @@ public abstract class AbstractMailService implements IEMailService {
         this.cachedMailSender = null;
     }
 
-    protected abstract Mono<EmailConfigExtension> getConfigExtension();
+    protected abstract Mono<EmailServerConfig> getConfigExtension();
 }
