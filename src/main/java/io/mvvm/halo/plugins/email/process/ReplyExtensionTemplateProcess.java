@@ -4,6 +4,7 @@ import io.mvvm.halo.plugins.email.EMailTemplateEngineManager;
 import io.mvvm.halo.plugins.email.ExtensionTemplateProcess;
 import io.mvvm.halo.plugins.email.EMallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
+import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
 import org.thymeleaf.context.Context;
 import reactor.core.publisher.Flux;
 import run.halo.app.core.extension.Reply;
@@ -31,7 +32,7 @@ public class ReplyExtensionTemplateProcess implements ExtensionTemplateProcess {
         if (extension instanceof Reply reply) {
             Context context = new Context();
             context.setVariable("comment", reply);
-            String process = engineManager.getTemplateEngine().process(ExtensionTemplateProcessEnum.Reply.getValue(), context);
+            String process = engineManager.getTemplateEngine().process(EmailTemplateOptionEnum.Reply.getOption().name(), context);
             return Flux.just(new EmailMessage("2369701264@qq.com", "评论收到新的回复", process));
         }
         return Flux.empty();

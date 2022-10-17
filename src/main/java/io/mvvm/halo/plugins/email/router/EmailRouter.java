@@ -1,15 +1,17 @@
 package io.mvvm.halo.plugins.email.router;
 
 import io.mvvm.halo.plugins.email.EmailPluginConst;
+import io.mvvm.halo.plugins.email.EmailTemplateOption;
+import io.mvvm.halo.plugins.email.EmailTemplateOptionManager;
 import io.mvvm.halo.plugins.email.IEMailService;
 import jakarta.annotation.Resource;
-import org.springdoc.webflux.core.fn.SpringdocRouteBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 /**
  * @description:
@@ -20,20 +22,23 @@ public class EmailRouter {
 
     @Resource
     private IEMailService mailService;
+    @Resource
+    private EmailTemplateOptionManager templateOptionManager;
 
     @Bean
     RouterFunction<ServerResponse> testConnectionRouter() {
-        return SpringdocRouteBuilder.route()
-                .GET("/apis/api.plugin.halo.run/v1alpha1/plugins/" + EmailPluginConst.pluginId + "/io.mvvm.halo.plugins.email/testConnection", this::testConnection, builder -> {
-                    builder.operationId("testConnection")
-                            .description("testConnection..")
-                            .tag("Email");
-                })
-                .build();
+        return route(GET(buildRoute("testConnection")),
+                request -> ServerResponse.ok().body(mailService.testConnection(), Boolean.class));
     }
 
-    Mono<ServerResponse> testConnection(ServerRequest request) {
-        return ServerResponse.ok().body(mailService.testConnection(), Boolean.class);
+    @Bean
+    RouterFunction<ServerResponse> templateOptionRouter() {
+        return route(GET(buildRoute("/templateOptions")),
+                request -> ServerResponse.ok().body(templateOptionManager.getOptions(), EmailTemplateOption.class));
+    }
+
+    String buildRoute(String suffix) {
+        return "/apis/api.plugin.halo.run/v1alpha1/plugins/" + EmailPluginConst.pluginId + "/io.mvvm.halo.plugins.email" + suffix;
     }
 
 }

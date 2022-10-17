@@ -4,6 +4,7 @@ import io.mvvm.halo.plugins.email.AbstractTemplateProcess;
 import io.mvvm.halo.plugins.email.EMailTemplateEngineManager;
 import io.mvvm.halo.plugins.email.EMallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
+import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.context.Context;
 import reactor.core.publisher.Flux;
@@ -30,7 +31,7 @@ public class PostExtensionTemplateProcess extends AbstractTemplateProcess {
         if (extension instanceof Post comment) {
             Context context = new Context();
             context.setVariable("post", comment);
-            String process = process(ExtensionTemplateProcessEnum.Comment.getValue(), context);
+            String process = process(EmailTemplateOptionEnum.Comment.getOption().name(), context);
             return Flux.just(new EmailMessage("2369710264@qq.com", "收到新的评论", process));
         }
         return Flux.empty();
