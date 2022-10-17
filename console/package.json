@@ -13,7 +13,8 @@
   "dependencies": {
     "@halo-dev/console-shared": "^0.0.0-alpha.5",
     "@halo-dev/components": "^0.0.0-alpha.4",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "axios": "^0.27.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",

@@ -38,7 +38,7 @@ public class EmailRouter {
     }
 
     String buildRoute(String suffix) {
-        return "/apis/api.plugin.halo.run/v1alpha1/plugins/" + EmailPluginConst.pluginId + "/io.mvvm.halo.plugins.email" + suffix;
+        return "/api/api.plugin.halo.run/v1alpha1/plugins/" + EmailPluginConst.pluginId + "/io.mvvm.halo.plugins.email" + suffix;
     }
 
 }
