@@ -41,7 +41,7 @@ public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
         if (extension instanceof Comment comment) {
             Context context = new Context();
             context.setVariable("comment", comment);
-            String process = process(EmailTemplateOptionEnum.Comment.getOption().name(), context);
+            String process = process("comment", context);
             return Flux.just(new EmailMessage("to", "收到新的评论", process));
         }
         return Flux.empty();
