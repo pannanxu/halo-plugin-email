@@ -87,13 +87,10 @@ public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
     Flux<EmailMessage> noNeedAuditComment(Comment comment) {
         return extensionClient.fetch(Post.class, comment.getSpec().getSubjectRef().getName())
                 .flatMap(post -> extensionClient.fetch(User.class, post.getSpec().getOwner()).zipWith(Mono.just(post)))
+                .filter(tuple -> !tuple.getT1().getSpec().getDisplayName().equals(comment.getSpec().getOwner().getName()))
                 .flatMapMany(tuple -> {
                     User postOwner = tuple.getT1();
                     Post post = tuple.getT2();
-
-                    if (postOwner.getSpec().getDisplayName().equals(comment.getSpec().getOwner().getName())) {
-                        return Flux.empty();
-                    }
 
                     Context context = new Context();
                     context.setVariable("post", post);
