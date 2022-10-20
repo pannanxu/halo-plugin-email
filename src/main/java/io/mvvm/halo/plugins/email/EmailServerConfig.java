@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class EmailServerConfig {
 
+    private String adminEmail;
     @Schema(required = true)
     private boolean enable = false;
     private String formName;

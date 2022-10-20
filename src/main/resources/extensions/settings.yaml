@@ -14,6 +14,10 @@ spec:
           validation: required
           value: false
         - $formkit: text
+          label: 管理员邮箱
+          name: adminEmail
+          validation: required
+        - $formkit: text
           label: FormName
           name: formName
           validation: required

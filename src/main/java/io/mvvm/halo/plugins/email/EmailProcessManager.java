@@ -4,6 +4,8 @@ import io.mvvm.halo.plugins.email.process.CommentExtensionTemplateProcess;
 import io.mvvm.halo.plugins.email.process.PostExtensionTemplateProcess;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import run.halo.app.extension.ReactiveExtensionClient;
+import run.halo.app.infra.SystemConfigurableEnvironmentFetcher;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -21,7 +23,13 @@ public class EmailProcessManager {
     private final Map<String, Set<ExtensionTemplateProcess>> map;
     private final EMailTemplateEngineManager engineManager;
 
-    public EmailProcessManager(EMailTemplateEngineManager engineManager) {
+    private final SystemConfigurableEnvironmentFetcher environmentFetcher;
+    private final ReactiveExtensionClient extensionClient;
+    public EmailProcessManager(EMailTemplateEngineManager engineManager,
+                               SystemConfigurableEnvironmentFetcher environmentFetcher,
+                               ReactiveExtensionClient extensionClient) {
+        this.environmentFetcher = environmentFetcher;
+        this.extensionClient = extensionClient;
         this.map = new ConcurrentHashMap<>();
         this.engineManager = engineManager;
         init();
@@ -29,7 +37,7 @@ public class EmailProcessManager {
 
     private void init() {
         registry(new PostExtensionTemplateProcess(engineManager));
-        registry(new CommentExtensionTemplateProcess(engineManager));
+        registry(new CommentExtensionTemplateProcess(engineManager, environmentFetcher, extensionClient));
     }
 
     public synchronized void registry(ExtensionTemplateProcess process) {
