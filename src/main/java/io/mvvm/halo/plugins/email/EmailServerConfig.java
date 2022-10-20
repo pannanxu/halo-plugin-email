@@ -12,6 +12,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class EmailServerConfig {
 
+    public static final String NAME = "halo-plugin-email-settings";
+    public static final String BASIC_GROUP = "basic";
+
     private String adminEmail;
     @Schema(required = true)
     private boolean enable = false;

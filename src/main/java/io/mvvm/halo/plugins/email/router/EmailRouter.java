@@ -1,6 +1,6 @@
 package io.mvvm.halo.plugins.email.router;
 
-import io.mvvm.halo.plugins.email.EmailPluginConst;
+import io.mvvm.halo.plugins.email.EMailPlugin;
 import io.mvvm.halo.plugins.email.EmailTemplateOption;
 import io.mvvm.halo.plugins.email.EmailTemplateOptionManager;
 import io.mvvm.halo.plugins.email.IEMailService;
@@ -38,7 +38,7 @@ public class EmailRouter {
     }
 
     String buildRoute(String suffix) {
-        return "/api/api.plugin.halo.run/v1alpha1/plugins/" + EmailPluginConst.pluginId + "/io.mvvm.halo.plugins.email" + suffix;
+        return "/api/api.plugin.halo.run/v1alpha1/plugins/" + EMailPlugin.PLUGIN_ID + "/io.mvvm.halo.plugins.email" + suffix;
     }
 
 }

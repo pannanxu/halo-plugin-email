@@ -50,20 +50,13 @@ public class EMailServiceImpl extends AbstractMailService {
 
     @Override
     protected Mono<EmailServerConfig> getConfigExtension() {
-        return client.get(ConfigMap.class, EmailPluginConst.emailServerSettingName)
+        return client.get(ConfigMap.class, EmailServerConfig.NAME)
                 .map(ConfigMap::getData)
                 .flatMap(config -> {
-                    String basic = config.get("basic");
+                    String basic = config.get(EmailServerConfig.BASIC_GROUP);
                     EmailServerConfig extension = JsonUtils.jsonToObject(basic, EmailServerConfig.class);
                     return Mono.just(extension);
                 });
     }
 
-    @Override
-    public void refreshCache(ConfigMap configMap) {
-        if (EmailPluginConst.emailServerSettingName.equals(configMap.getMetadata().getName())) {
-            log.info("刷新 email server configMap");
-            clearCache();
-        }
-    }
 }

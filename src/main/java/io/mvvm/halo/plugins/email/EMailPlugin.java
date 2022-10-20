@@ -16,6 +16,9 @@ import run.halo.app.plugin.BasePlugin;
 @Slf4j
 @Component
 public class EMailPlugin extends BasePlugin {
+    public static final String PLUGIN_ID = "halo-plugin-email";
+
+
     private final SchemeManager schemeManager;
     private final ReactiveExtensionClient client;
     private final IEMailService mailService;

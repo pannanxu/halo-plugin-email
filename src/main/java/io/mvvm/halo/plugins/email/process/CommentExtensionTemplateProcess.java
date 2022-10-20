@@ -4,7 +4,6 @@ import io.mvvm.halo.plugins.email.AbstractTemplateProcess;
 import io.mvvm.halo.plugins.email.EMailTemplateEngineManager;
 import io.mvvm.halo.plugins.email.EMallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
-import io.mvvm.halo.plugins.email.EmailPluginConst;
 import io.mvvm.halo.plugins.email.EmailServerConfig;
 import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
 import org.thymeleaf.context.Context;
@@ -64,9 +63,9 @@ public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
      * @return 需要给系统管理员推送的邮件
      */
     Flux<EmailMessage> auditComment(Comment comment) {
-        return extensionClient.get(ConfigMap.class, EmailPluginConst.emailServerSettingName)
+        return extensionClient.get(ConfigMap.class, EmailServerConfig.NAME)
                 .map(ConfigMap::getData)
-                .map(config -> JsonUtils.jsonToObject(config.get("basic"), EmailServerConfig.class))
+                .map(config -> JsonUtils.jsonToObject(config.get(EmailServerConfig.BASIC_GROUP), EmailServerConfig.class))
                 .flatMapMany(serverConfig -> {
                     Context context = new Context();
                     context.setVariable("comment", comment);
