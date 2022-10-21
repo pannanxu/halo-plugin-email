@@ -36,6 +36,9 @@ public abstract class AbstractMailService implements IEMailService {
     public Mono<Boolean> testConnection() {
         return getConfigExtension().filter(EmailServerConfig::isEnable)
                 .flatMap(config -> {
+                    clearCache();
+                    EmailServerConfig oldConfig = configRef.getAndUpdate(emailServerConfig -> config);
+
                     JavaMailSender javaMailSender = getMailSender(config);
                     if (javaMailSender instanceof JavaMailSenderImpl mailSender) {
                         try {
@@ -61,34 +64,32 @@ public abstract class AbstractMailService implements IEMailService {
             log.info("Callback is null, skip to send email");
             return;
         }
-        getConfigExtension().filter(EmailServerConfig::isEnable)
-                .doOnNext(config -> {
-                    // get mail sender
-                    JavaMailSender mailSender = getMailSender(config);
+        EmailServerConfig config = configRef.get();
 
-                    // create mime message helper
-                    MimeMessageHelper messageHelper = new MimeMessageHelper(mailSender.createMimeMessage());
+        // get mail sender
+        JavaMailSender mailSender = getMailSender(config);
 
-                    try {
-                        // set from-name
-                        messageHelper.setFrom(getFromAddress(mailSender, config));
-                        // handle message set separately
-                        callback.accept(messageHelper);
+        // create mime message helper
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mailSender.createMimeMessage());
 
-                        // get mime message
-                        MimeMessage mimeMessage = messageHelper.getMimeMessage();
-                        // send email
-                        mailSender.send(mimeMessage);
+        try {
+            // set from-name
+            messageHelper.setFrom(getFromAddress(mailSender, config));
+            // handle message set separately
+            callback.accept(messageHelper);
 
-                        log.info("Sent an email to [{}] successfully, subject: [{}], sent date: [{}]",
-                                Arrays.toString(mimeMessage.getAllRecipients()),
-                                mimeMessage.getSubject(),
-                                mimeMessage.getSentDate());
-                    } catch (Exception e) {
-                        throw new RuntimeException("邮件发送失败，请检查 SMTP 服务配置是否正确", e);
-                    }
-                })
-                .subscribe();
+            // get mime message
+            MimeMessage mimeMessage = messageHelper.getMimeMessage();
+            // send email
+            mailSender.send(mimeMessage);
+
+            log.info("Sent an email to [{}] successfully, subject: [{}], sent date: [{}]",
+                    Arrays.toString(mimeMessage.getAllRecipients()),
+                    mimeMessage.getSubject(),
+                    mimeMessage.getSentDate());
+        } catch (Exception e) {
+            throw new RuntimeException("邮件发送失败，请检查 SMTP 服务配置是否正确", e);
+        }
     }
 
     /**
@@ -98,12 +99,6 @@ public abstract class AbstractMailService implements IEMailService {
      */
     @NonNull
     private JavaMailSender getMailSender(EmailServerConfig newConfig) {
-        // 如果配置已修改则更新缓存中的 cachedMailSender
-        EmailServerConfig oldConfig = configRef.getAndUpdate(emailServerConfig -> newConfig);
-        if (null != oldConfig && !oldConfig.equals(newConfig)) {
-            clearCache();
-        }
-
         if (this.cachedMailSender == null) {
             synchronized (IEMailService.class) {
                 if (this.cachedMailSender == null) {
