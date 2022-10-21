@@ -1,36 +1,28 @@
 package io.mvvm.halo.plugins.email.process;
 
-import io.mvvm.halo.plugins.email.AbstractTemplateProcess;
 import io.mvvm.halo.plugins.email.EMailTemplateEngineManager;
 import io.mvvm.halo.plugins.email.EMallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
-import io.mvvm.halo.plugins.email.EmailServerConfig;
 import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
 import org.thymeleaf.context.Context;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.Comment;
 import run.halo.app.core.extension.Post;
 import run.halo.app.core.extension.User;
-import run.halo.app.extension.ConfigMap;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.infra.SystemConfigurableEnvironmentFetcher;
 import run.halo.app.infra.SystemSetting;
-import run.halo.app.infra.utils.JsonUtils;
 
 /**
  * @description:
  * @author: pan
  **/
-public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
-    private final SystemConfigurableEnvironmentFetcher environmentFetcher;
-    private final ReactiveExtensionClient extensionClient;
-
+public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTemplateProcess {
     public CommentExtensionTemplateProcess(EMailTemplateEngineManager engineManager,
                                            SystemConfigurableEnvironmentFetcher environmentFetcher,
                                            ReactiveExtensionClient extensionClient) {
-        this.environmentFetcher = environmentFetcher;
-        this.extensionClient = extensionClient;
+        setEnvironmentFetcher(environmentFetcher);
+        setExtensionClient(extensionClient);
         setEngineManager(engineManager);
     }
 
@@ -42,7 +34,7 @@ public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
     @Override
     public Flux<EmailMessage> process(Object extension) {
         if (extension instanceof Comment comment) {
-            return environmentFetcher.fetch(SystemSetting.Comment.GROUP, SystemSetting.Comment.class)
+            return fetchSystemSetting(SystemSetting.Comment.GROUP, SystemSetting.Comment.class)
                     .flatMapMany(commentSetting -> flatMapManyCommentSetting(comment, commentSetting));
         }
         return Flux.empty();
@@ -63,15 +55,12 @@ public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
      * @return 需要给系统管理员推送的邮件
      */
     Flux<EmailMessage> auditComment(Comment comment) {
-        return extensionClient.get(ConfigMap.class, EmailServerConfig.NAME)
-                .map(ConfigMap::getData)
-                .map(config -> JsonUtils.jsonToObject(config.get(EmailServerConfig.BASIC_GROUP), EmailServerConfig.class))
-                .flatMapMany(serverConfig -> {
-                    Context context = new Context();
-                    context.setVariable("comment", comment);
-                    String process = process(EmailTemplateOptionEnum.Audit.getOption().name(), context);
-                    return Flux.just(new EmailMessage(serverConfig.getAdminEmail(), "您的博客日志有了新的评论需要审核", process));
-                });
+        return getEmailServerConfig().flatMapMany(serverConfig -> {
+            Context context = new Context();
+            context.setVariable("comment", comment);
+            String process = process(EmailTemplateOptionEnum.Audit.getOption().name(), context);
+            return Flux.just(new EmailMessage(serverConfig.getAdminEmail(), "您的博客日志有了新的评论需要审核", process));
+        });
     }
 
     /**
@@ -85,8 +74,7 @@ public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
      * @return 需要给文章发布者推送的邮件
      */
     Flux<EmailMessage> noNeedAuditComment(Comment comment) {
-        return extensionClient.fetch(Post.class, comment.getSpec().getSubjectRef().getName())
-                .flatMap(post -> extensionClient.fetch(User.class, post.getSpec().getOwner()).zipWith(Mono.just(post)))
+        return fetchPostAndOwner(comment.getSpec().getSubjectRef().getName())
                 .filter(tuple -> !tuple.getT1().getSpec().getDisplayName().equals(comment.getSpec().getOwner().getName()))
                 .flatMapMany(tuple -> {
                     User postOwner = tuple.getT1();
