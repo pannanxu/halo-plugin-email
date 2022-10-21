@@ -14,11 +14,11 @@ import java.util.Map;
  * @author: pan
  **/
 @Slf4j
-public class EMailTemplateResolver extends StringTemplateResolver {
+public class EmailTemplateResolver extends StringTemplateResolver {
 
     private final ReactiveExtensionClient client;
 
-    public EMailTemplateResolver(ReactiveExtensionClient client) {
+    public EmailTemplateResolver(ReactiveExtensionClient client) {
         this.client = client;
     }
 

@@ -1,8 +1,8 @@
 package io.mvvm.halo.plugins.email.process;
 
-import io.mvvm.halo.plugins.email.EMailTemplateEngineManager;
+import io.mvvm.halo.plugins.email.EmailTemplateEngineManager;
 import io.mvvm.halo.plugins.email.ExtensionTemplateProcess;
-import io.mvvm.halo.plugins.email.EMallSendEndpoint;
+import io.mvvm.halo.plugins.email.EmallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
 import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
 import org.thymeleaf.context.Context;
@@ -16,15 +16,15 @@ import run.halo.app.core.extension.Reply;
 //@Component
 public class ReplyExtensionTemplateProcess implements ExtensionTemplateProcess {
 
-    private final EMailTemplateEngineManager engineManager;
+    private final EmailTemplateEngineManager engineManager;
 
-    public ReplyExtensionTemplateProcess(EMailTemplateEngineManager engineManager) {
+    public ReplyExtensionTemplateProcess(EmailTemplateEngineManager engineManager) {
         this.engineManager = engineManager;
     }
 
     @Override
     public String getEndpoint() {
-        return EMallSendEndpoint.ExtensionAdd.name();
+        return EmallSendEndpoint.ExtensionAdd.name();
     }
 
     @Override

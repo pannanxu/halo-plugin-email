@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EMailRequestPayload {
+public class EmailRequestPayload {
 
     private String endpoint;
     private Object data;

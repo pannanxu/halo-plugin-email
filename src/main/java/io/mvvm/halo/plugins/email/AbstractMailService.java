@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * @author johnniang, Pan
  */
 @Slf4j
-public abstract class AbstractMailService implements IEMailService {
+public abstract class AbstractMailService implements IEmailService {
 
     private volatile JavaMailSender cachedMailSender;
 
@@ -100,7 +100,7 @@ public abstract class AbstractMailService implements IEMailService {
     @NonNull
     private JavaMailSender getMailSender(EmailServerConfig newConfig) {
         if (this.cachedMailSender == null) {
-            synchronized (IEMailService.class) {
+            synchronized (IEmailService.class) {
                 if (this.cachedMailSender == null) {
                     // create mail sender factory
                     MailSenderFactory mailSenderFactory = new MailSenderFactory();

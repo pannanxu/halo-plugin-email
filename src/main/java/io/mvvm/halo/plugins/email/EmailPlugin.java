@@ -17,23 +17,23 @@ import run.halo.app.plugin.BasePlugin;
  */
 @Slf4j
 @Component
-public class EMailPlugin extends BasePlugin {
+public class EmailPlugin extends BasePlugin {
     public static final String PLUGIN_ID = "halo-plugin-email";
 
 
     private final SchemeManager schemeManager;
     private final ReactiveExtensionClient client;
-    private final IEMailService mailService;
+    private final IEmailService mailService;
     private final EmailProcessManager processManager;
-    private final EMailTemplateEngineManager engineManager;
+    private final EmailTemplateEngineManager engineManager;
     private final SystemConfigurableEnvironmentFetcher environmentFetcher;
 
-    public EMailPlugin(PluginWrapper wrapper,
+    public EmailPlugin(PluginWrapper wrapper,
                        SchemeManager schemeManager,
                        ReactiveExtensionClient client,
-                       IEMailService mailService,
+                       IEmailService mailService,
                        EmailProcessManager processManager,
-                       EMailTemplateEngineManager engineManager,
+                       EmailTemplateEngineManager engineManager,
                        SystemConfigurableEnvironmentFetcher environmentFetcher) {
         super(wrapper);
         this.schemeManager = schemeManager;
@@ -55,7 +55,7 @@ public class EMailPlugin extends BasePlugin {
                 log.info("Watcher onAdd: {} ", extension.toString());
                 Watcher.super.onAdd(extension);
 
-                mailService.send(new EMailRequestPayload(EMallSendEndpoint.ExtensionAdd.name(), extension));
+                mailService.send(new EmailRequestPayload(EmallSendEndpoint.ExtensionAdd.name(), extension));
 
             }
 
@@ -64,7 +64,7 @@ public class EMailPlugin extends BasePlugin {
                 log.info("Watcher onUpdate: {}, {} ", oldExtension.toString(), newExtension.toString());
                 Watcher.super.onUpdate(oldExtension, newExtension);
 
-                mailService.send(new EMailRequestPayload(EMallSendEndpoint.ExtensionUpdate.name(), newExtension));
+                mailService.send(new EmailRequestPayload(EmallSendEndpoint.ExtensionUpdate.name(), newExtension));
 
             }
 
@@ -82,6 +82,6 @@ public class EMailPlugin extends BasePlugin {
     public void stop() {
         schemeManager.unregister(schemeManager.get(EmailTemplateExtension.class));
 
-        processManager.unregister(EMallSendEndpoint.ExtensionAdd.name(), CommentExtensionTemplateProcess.class);
+        processManager.unregister(EmallSendEndpoint.ExtensionAdd.name(), CommentExtensionTemplateProcess.class);
     }
 }

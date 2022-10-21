@@ -4,7 +4,7 @@ package io.mvvm.halo.plugins.email;
  * @description:
  * @author: pan
  **/
-public enum EMallSendEndpoint {
+public enum EmallSendEndpoint {
 
     ExtensionAdd,
     ExtensionUpdate,

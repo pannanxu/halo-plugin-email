@@ -6,10 +6,10 @@ import reactor.core.publisher.Mono;
  * @description:
  * @author: pan
  **/
-public interface IEMailService {
+public interface IEmailService {
 
     Mono<Boolean> testConnection();
 
-    void send(EMailRequestPayload payload);
+    void send(EmailRequestPayload payload);
 
 }

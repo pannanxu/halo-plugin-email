@@ -15,19 +15,19 @@ import run.halo.app.infra.utils.JsonUtils;
  **/
 @Slf4j
 @Component
-public class EMailServiceImpl extends AbstractMailService {
+public class EmailServiceImpl extends AbstractMailService {
 
     private final EmailProcessManager processManager;
     private final ReactiveExtensionClient client;
 
-    public EMailServiceImpl(EmailProcessManager processManager,
+    public EmailServiceImpl(EmailProcessManager processManager,
                             ReactiveExtensionClient client) {
         this.processManager = processManager;
         this.client = client;
     }
 
     @Override
-    public void send(EMailRequestPayload payload) {
+    public void send(EmailRequestPayload payload) {
         processManager.getProcessFlux(payload.getEndpoint())
                 .publishOn(Schedulers.boundedElastic())
                 .flatMap(process -> process.process(payload.getData()))

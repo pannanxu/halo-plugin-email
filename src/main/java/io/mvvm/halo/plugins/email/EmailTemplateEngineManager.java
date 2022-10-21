@@ -11,13 +11,13 @@ import run.halo.app.theme.engine.SpringWebFluxTemplateEngine;
  * @author: pan
  **/
 @Component
-public class EMailTemplateEngineManager {
+public class EmailTemplateEngineManager {
 
     private final ISpringWebFluxTemplateEngine engine;
     private final ITemplateResolver templateResolver;
 
-    public EMailTemplateEngineManager(ReactiveExtensionClient client) {
-        this.templateResolver = new EMailTemplateResolver(client);
+    public EmailTemplateEngineManager(ReactiveExtensionClient client) {
+        this.templateResolver = new EmailTemplateResolver(client);
         this.engine = templateEngineGenerator();
     }
 
