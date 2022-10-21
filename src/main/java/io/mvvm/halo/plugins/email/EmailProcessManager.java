@@ -1,11 +1,7 @@
 package io.mvvm.halo.plugins.email;
 
-import io.mvvm.halo.plugins.email.process.CommentExtensionTemplateProcess;
-import io.mvvm.halo.plugins.email.process.PostExtensionTemplateProcess;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import run.halo.app.extension.ReactiveExtensionClient;
-import run.halo.app.infra.SystemConfigurableEnvironmentFetcher;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -21,29 +17,25 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class EmailProcessManager {
 
     private final Map<String, Set<ExtensionTemplateProcess>> map;
-    private final EMailTemplateEngineManager engineManager;
 
-    private final SystemConfigurableEnvironmentFetcher environmentFetcher;
-    private final ReactiveExtensionClient extensionClient;
-    public EmailProcessManager(EMailTemplateEngineManager engineManager,
-                               SystemConfigurableEnvironmentFetcher environmentFetcher,
-                               ReactiveExtensionClient extensionClient) {
-        this.environmentFetcher = environmentFetcher;
-        this.extensionClient = extensionClient;
+    public EmailProcessManager() {
         this.map = new ConcurrentHashMap<>();
-        this.engineManager = engineManager;
-        init();
     }
 
-    private void init() {
-        registry(new PostExtensionTemplateProcess(engineManager));
-        registry(new CommentExtensionTemplateProcess(engineManager, environmentFetcher, extensionClient));
-    }
-
-    public synchronized void registry(ExtensionTemplateProcess process) {
+    public synchronized void register(ExtensionTemplateProcess process) {
         Set<ExtensionTemplateProcess> processes = map.getOrDefault(process.getEndpoint(), new CopyOnWriteArraySet<>());
         processes.add(process);
         map.put(process.getEndpoint(), processes);
+    }
+
+    public <T> void unregister(String endpoint, Class<T> clazz) {
+        Set<ExtensionTemplateProcess> processes = map.get(endpoint);
+        if (null != processes) {
+            processes.stream()
+                    .filter(e -> e.getClass().isAssignableFrom(clazz))
+                    .findFirst()
+                    .ifPresent(processes::remove);
+        }
     }
 
     public Set<ExtensionTemplateProcess> getProcess(String endpoint) {
