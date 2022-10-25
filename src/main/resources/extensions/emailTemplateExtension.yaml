@@ -3,5 +3,14 @@ kind: EmailTemplateExtension
 metadata:
   name: comment
 spec:
-  template: "<h1 th:text=\"${post.spec.title}\"></h1>"
+  template: "classpath:template/comment.html"
+  enable: true
+
+---
+apiVersion: io.mvvm.halo.plugins.email/v1alpha1
+kind: EmailTemplateExtension
+metadata:
+  name: audit
+spec:
+  template: "classpath:template/audit.html"
   enable: true

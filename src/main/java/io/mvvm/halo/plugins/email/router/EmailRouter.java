@@ -27,7 +27,7 @@ public class EmailRouter {
 
     @Bean
     RouterFunction<ServerResponse> testConnectionRouter() {
-        return route(GET(buildRoute("testConnection")),
+        return route(GET(buildRoute("/testConnection")),
                 request -> ServerResponse.ok().body(mailService.testConnection(), Boolean.class));
     }
 

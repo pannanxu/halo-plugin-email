@@ -65,6 +65,9 @@ public abstract class AbstractMailService implements IEmailService {
             return;
         }
         EmailServerConfig config = configRef.get();
+        if (null == config) {
+            throw new RuntimeException("修改配置后请执行「测试连接」API");
+        }
 
         // get mail sender
         JavaMailSender mailSender = getMailSender(config);

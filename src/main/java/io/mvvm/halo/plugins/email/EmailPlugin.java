@@ -21,28 +21,30 @@ import run.halo.app.plugin.HaloPluginManager;
 public class EmailPlugin extends BasePlugin {
     public static final String PLUGIN_ID = "halo-plugin-email";
 
-
-    private final SchemeManager schemeManager;
-    private final ReactiveExtensionClient client;
-    private final IEmailService mailService;
-    private final EmailProcessManager processManager;
-    private final EmailTemplateEngineManager engineManager;
-    private SystemConfigurableEnvironmentFetcher environmentFetcher;
+    public static SchemeManager schemeManager;
+    public static ReactiveExtensionClient client;
+    public static IEmailService mailService;
+    public static TemplateResolver templateResolver;
+    public static EmailProcessManager processManager;
+    public static EmailTemplateEngineManager engineManager;
+    public static SystemConfigurableEnvironmentFetcher environmentFetcher;
 
     public EmailPlugin(PluginWrapper wrapper,
                        SchemeManager schemeManager,
                        ReactiveExtensionClient client,
                        IEmailService mailService,
                        EmailProcessManager processManager,
-                       EmailTemplateEngineManager engineManager) {
+                       EmailTemplateEngineManager engineManager,
+                       TemplateResolver templateResolver) {
         super(wrapper);
-        this.schemeManager = schemeManager;
-        this.client = client;
-        this.mailService = mailService;
-        this.processManager = processManager;
-        this.engineManager = engineManager;
+        EmailPlugin.schemeManager = schemeManager;
+        EmailPlugin.client = client;
+        EmailPlugin.mailService = mailService;
+        EmailPlugin.processManager = processManager;
+        EmailPlugin.engineManager = engineManager;
+        EmailPlugin.templateResolver = templateResolver;
         if (getWrapper().getPluginManager() instanceof HaloPluginManager manager) {
-            this.environmentFetcher = manager.getRootApplicationContext().getBean(SystemConfigurableEnvironmentFetcher.class);
+            EmailPlugin.environmentFetcher = manager.getRootApplicationContext().getBean(SystemConfigurableEnvironmentFetcher.class);
         }
     }
 
@@ -77,7 +79,7 @@ public class EmailPlugin extends BasePlugin {
             }
         });
 
-        processManager.register(new CommentExtensionTemplateProcess(engineManager, environmentFetcher, client));
+        processManager.register(new CommentExtensionTemplateProcess());
     }
 
     @Override

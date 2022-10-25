@@ -1,31 +1,23 @@
 package io.mvvm.halo.plugins.email.process;
 
-import io.mvvm.halo.plugins.email.EmailTemplateEngineManager;
-import io.mvvm.halo.plugins.email.EmallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
 import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
+import io.mvvm.halo.plugins.email.EmallSendEndpoint;
+import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.context.Context;
 import reactor.core.publisher.Flux;
 import reactor.util.function.Tuple2;
 import run.halo.app.core.extension.Comment;
 import run.halo.app.core.extension.Post;
 import run.halo.app.core.extension.User;
-import run.halo.app.extension.ReactiveExtensionClient;
-import run.halo.app.infra.SystemConfigurableEnvironmentFetcher;
 import run.halo.app.infra.SystemSetting;
 
 /**
  * @description:
  * @author: pan
  **/
+@Slf4j
 public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTemplateProcess {
-    public CommentExtensionTemplateProcess(EmailTemplateEngineManager engineManager,
-                                           SystemConfigurableEnvironmentFetcher environmentFetcher,
-                                           ReactiveExtensionClient extensionClient) {
-        setEnvironmentFetcher(environmentFetcher);
-        setExtensionClient(extensionClient);
-        setEngineManager(engineManager);
-    }
 
     @Override
     public String getEndpoint() {
@@ -59,8 +51,10 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
         return getEmailServerConfig().flatMapMany(serverConfig -> {
             Context context = new Context();
             context.setVariable("comment", comment);
-            String content = contentParse(EmailTemplateOptionEnum.Audit.getOption().name(), context);
-            return Flux.just(new EmailMessage(serverConfig.getAdminEmail(), "您的博客日志有了新的评论需要审核", content));
+            return templateToHtml(EmailTemplateOptionEnum.Audit.getOption().name(), context)
+                    .flatMapMany(templateHtml ->
+                            Flux.just(new EmailMessage(serverConfig.getAdminEmail(),
+                                    "您的博客日志有了新的评论需要审核", templateHtml)));
         });
     }
 
@@ -79,11 +73,11 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
                 .filter(tuple -> !tuple.getT1().getSpec().getDisplayName().equals(comment.getSpec().getOwner().getName()))
                 .flatMapMany(tuple -> {
                     User postOwner = tuple.getT1();
-
                     Context context = buildNoNeedAuditCommentContext(comment, tuple);
-                    String content = contentParse(EmailTemplateOptionEnum.Comment.getOption().name(), context);
-
-                    return Flux.just(new EmailMessage(postOwner.getSpec().getEmail(), "您的日志有了新的评论", content));
+                    return templateToHtml(EmailTemplateOptionEnum.Audit.getOption().name(), context)
+                            .flatMapMany(templateHtml ->
+                                    Flux.just(new EmailMessage(postOwner.getSpec().getEmail(),
+                                            "您的日志有了新的评论", templateHtml)));
                 });
     }
 

@@ -1,10 +1,9 @@
 package io.mvvm.halo.plugins.email.process;
 
 import io.mvvm.halo.plugins.email.AbstractTemplateProcess;
-import io.mvvm.halo.plugins.email.EmailTemplateEngineManager;
-import io.mvvm.halo.plugins.email.EmallSendEndpoint;
 import io.mvvm.halo.plugins.email.EmailMessage;
 import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
+import io.mvvm.halo.plugins.email.EmallSendEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.context.Context;
 import reactor.core.publisher.Flux;
@@ -16,10 +15,6 @@ import run.halo.app.core.extension.Post;
  **/
 @Slf4j
 public class PostExtensionTemplateProcess extends AbstractTemplateProcess {
-
-    public PostExtensionTemplateProcess(EmailTemplateEngineManager engineManager) {
-        setEngineManager(engineManager);
-    }
 
     @Override
     public String getEndpoint() {

@@ -1,6 +1,5 @@
 package io.mvvm.halo.plugins.email;
 
-import lombok.Setter;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.thymeleaf.context.Context;
@@ -18,17 +17,28 @@ import java.util.Map;
  **/
 public abstract class AbstractTemplateProcess implements ExtensionTemplateProcess {
 
-    @Setter
     protected EmailTemplateEngineManager engineManager;
-    @Setter
     protected SystemConfigurableEnvironmentFetcher environmentFetcher;
-    @Setter
     protected ReactiveExtensionClient extensionClient;
+    protected TemplateResolver templateResolver;
+
+    public AbstractTemplateProcess() {
+        this.engineManager = EmailPlugin.engineManager;
+        this.environmentFetcher = EmailPlugin.environmentFetcher;
+        this.extensionClient = EmailPlugin.client;
+        this.templateResolver = EmailPlugin.templateResolver;
+    }
 
     private final ExpressionParser expressionParser = new SpelExpressionParser();
 
+    @Deprecated
     protected String contentParse(String template, Context context) {
         return engineManager.getTemplateEngine().process(template, context);
+    }
+
+    protected Mono<String> templateToHtml(String template, Context context) {
+        return templateResolver.getTemplate(template)
+                .map(templateHtml -> engineManager.getTemplateEngine().process(templateHtml, context));
     }
 
     protected String subjectParse(String subjectExpress, Map<String, Object> variables) {
