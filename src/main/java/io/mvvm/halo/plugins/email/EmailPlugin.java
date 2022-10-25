@@ -10,6 +10,7 @@ import run.halo.app.extension.SchemeManager;
 import run.halo.app.extension.Watcher;
 import run.halo.app.infra.SystemConfigurableEnvironmentFetcher;
 import run.halo.app.plugin.BasePlugin;
+import run.halo.app.plugin.HaloPluginManager;
 
 /**
  * @author guqing
@@ -26,22 +27,23 @@ public class EmailPlugin extends BasePlugin {
     private final IEmailService mailService;
     private final EmailProcessManager processManager;
     private final EmailTemplateEngineManager engineManager;
-    private final SystemConfigurableEnvironmentFetcher environmentFetcher;
+    private SystemConfigurableEnvironmentFetcher environmentFetcher;
 
     public EmailPlugin(PluginWrapper wrapper,
                        SchemeManager schemeManager,
                        ReactiveExtensionClient client,
                        IEmailService mailService,
                        EmailProcessManager processManager,
-                       EmailTemplateEngineManager engineManager,
-                       SystemConfigurableEnvironmentFetcher environmentFetcher) {
+                       EmailTemplateEngineManager engineManager) {
         super(wrapper);
         this.schemeManager = schemeManager;
         this.client = client;
         this.mailService = mailService;
         this.processManager = processManager;
         this.engineManager = engineManager;
-        this.environmentFetcher = environmentFetcher;
+        if (getWrapper().getPluginManager() instanceof HaloPluginManager manager) {
+            this.environmentFetcher = manager.getRootApplicationContext().getBean(SystemConfigurableEnvironmentFetcher.class);
+        }
     }
 
     @Override

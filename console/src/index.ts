@@ -1,40 +1,32 @@
-import { definePlugin, BasicLayout } from "@halo-dev/console-shared";
+import {definePlugin} from "@halo-dev/console-shared";
 import DefaultView from "./views/DefaultView.vue";
-import { IconGrid } from "@halo-dev/components";
 import "./styles/index.css";
+import {markRaw} from "vue";
+import {IconFolder} from "@halo-dev/components";
 
 export default definePlugin({
   name: "halo-plugin-email",
   components: [],
   routes: [
     {
-      path: "/halo-plugin-email-config",
-      component: BasicLayout,
-      children: [
-        {
-          path: "",
-          name: "Email",
-          component: DefaultView,
-          meta: {
-            // permissions: ["plugin:halo-plugin-email:view"],
+      parentName: "Root",
+      route: {
+        path: "/email",
+        name: "Email",
+        component: DefaultView,
+        meta: {
+          title: "邮件",
+          searchable: true,
+          permissions: ["plugin:halo-plugin-email:view"],
+          menu: {
+            name: "邮件",
+            // group: "tool",
+            icon: markRaw(IconFolder),
+            priority: 0,
           },
         },
-      ],
-    },
-  ],
-  menus: [
-    {
-      name: "From halo-plugin-email",
-      items: [
-        {
-          name: "Email",
-          path: "/halo-plugin-email-config",
-          icon: IconGrid,
-        },
-      ],
+      },
     },
   ],
   extensionPoints: {},
-  activated() {},
-  deactivated() {},
 });
