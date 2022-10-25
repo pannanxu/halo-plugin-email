@@ -2,14 +2,25 @@
 
 Email plugin for Halo2.0
 
+![img.png](doc/images/无需审核模板.png)
+
+![img.png](doc/images/需要审核模板.png)
+
 ## 功能
 
-- 新评论邮件通知
-- 评论回复邮件通知
-- 评论审核邮件通知
-- 文章审核通知
-- 自定义通知模板
-- 为第三方插件提供邮件通知API
+- [x] 新评论邮件通知
+- [x] 为第三方插件提供邮件通知API
+- [ ] 评论审核邮件通知
+- [ ] 新回复邮件通知
+- [ ] 文章审核通知
+- [ ] 自定义通知模板
+
+## 使用
+
+1. Releases 下载最新版本
+2. Halo 后台插件安装并启动
+3. 进入 插件设置页面 配置邮件服务器信息
+4. 调用接口测试连接(true为成功,每次修改配置都需要进行测试): `http://ip:port/api/api.plugin.halo.run/v1alpha1/plugins/halo-plugin-email/io.mvvm.halo.plugins.email/testConnection"`
 
 ## 第三方插件
 
