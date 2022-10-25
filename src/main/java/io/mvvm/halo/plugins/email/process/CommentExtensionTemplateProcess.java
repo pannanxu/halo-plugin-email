@@ -10,7 +10,6 @@ import reactor.util.function.Tuple2;
 import run.halo.app.core.extension.Comment;
 import run.halo.app.core.extension.Post;
 import run.halo.app.core.extension.User;
-import run.halo.app.infra.SystemSetting;
 
 /**
  * @description:
@@ -27,14 +26,13 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
     @Override
     public Flux<EmailMessage> process(Object extension) {
         if (extension instanceof Comment comment) {
-            return fetchSystemSetting(SystemSetting.Comment.GROUP, SystemSetting.Comment.class)
-                    .flatMapMany(commentSetting -> flatMapManyCommentSetting(comment, commentSetting));
+            return flatMapManyCommentSetting(comment);
         }
         return Flux.empty();
     }
 
-    Flux<EmailMessage> flatMapManyCommentSetting(Comment comment, SystemSetting.Comment commentSetting) {
-        return commentSetting.getRequireReviewForNew()
+    Flux<EmailMessage> flatMapManyCommentSetting(Comment comment) {
+        return !comment.getSpec().getApproved()
                 ? auditComment(comment)
                 : noNeedAuditComment(comment);
     }
@@ -49,12 +47,16 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
      */
     Flux<EmailMessage> auditComment(Comment comment) {
         return getEmailServerConfig().flatMapMany(serverConfig -> {
-            Context context = new Context();
-            context.setVariable("comment", comment);
-            return templateToHtml(EmailTemplateOptionEnum.Audit.getOption().name(), context)
-                    .flatMapMany(templateHtml ->
-                            Flux.just(new EmailMessage(serverConfig.getAdminEmail(),
-                                    "您的博客日志有了新的评论需要审核", templateHtml)));
+            return fetchPostAndOwner(comment.getSpec().getSubjectRef().getName())
+                    .flatMapMany(tuple -> {
+                        Context context = buildCommentContext(comment, tuple);
+                        context.setVariable("comment", comment);
+                        context.setVariable("checkUrl", "https://github.com/pannanxu/halo-plugin-email"); // TODO 一键审核
+                        return templateToHtml(EmailTemplateOptionEnum.Audit.getOption().name(), context)
+                                .flatMapMany(templateHtml ->
+                                        Flux.just(new EmailMessage(serverConfig.getAdminEmail(),
+                                                "您的博客日志有了新的评论需要审核", templateHtml)));
+                    });
         });
     }
 
@@ -73,15 +75,15 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
                 .filter(tuple -> !tuple.getT1().getSpec().getDisplayName().equals(comment.getSpec().getOwner().getName()))
                 .flatMapMany(tuple -> {
                     User postOwner = tuple.getT1();
-                    Context context = buildNoNeedAuditCommentContext(comment, tuple);
-                    return templateToHtml(EmailTemplateOptionEnum.Audit.getOption().name(), context)
+                    Context context = buildCommentContext(comment, tuple);
+                    return templateToHtml(EmailTemplateOptionEnum.Comment.getOption().name(), context)
                             .flatMapMany(templateHtml ->
                                     Flux.just(new EmailMessage(postOwner.getSpec().getEmail(),
                                             "您的日志有了新的评论", templateHtml)));
                 });
     }
 
-    private Context buildNoNeedAuditCommentContext(Comment comment, Tuple2<User, Post> tuple) {
+    private Context buildCommentContext(Comment comment, Tuple2<User, Post> tuple) {
         User postOwner = tuple.getT1();
         Post post = tuple.getT2();
 
