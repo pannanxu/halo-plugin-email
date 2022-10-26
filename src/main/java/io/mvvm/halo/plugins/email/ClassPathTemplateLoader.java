@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @author: pan
  **/
 @Slf4j
-public class ClassPathTemplateResolver implements TemplateLoader {
+public class ClassPathTemplateLoader implements TemplateLoader {
 
     @Override
     public boolean check(EmailTemplateExtension extension) {

@@ -21,7 +21,7 @@ public class DefaultTemplateResolver implements TemplateResolver {
 
     public DefaultTemplateResolver(ReactiveExtensionClient client) {
         this.client = client;
-        addTemplateLoader(new ClassPathTemplateResolver());
+        addTemplateLoader(new ClassPathTemplateLoader());
     }
 
     @Override
