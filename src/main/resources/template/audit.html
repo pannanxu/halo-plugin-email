@@ -12,7 +12,7 @@
                     <span th:text="${comment.spec.owner.displayName}">匿名用户</span>：<span th:text="${comment.spec.content}">这也太棒了吧！</span>
                 </p>
                 <br />
-                <p style="color: #6e6e6e;font-size:13px;line-height:24px;">您可以点击<a th:href="${post.status.permalink}" href="https://github.com/pannanxu/halo-plugin-email">查看完整内容</a></p>
+                <p style="color: #6e6e6e;font-size:13px;line-height:24px;">您可以点击<a th:href="${postUrl}" href="https://github.com/pannanxu/halo-plugin-email">查看完整内容</a></p>
                 <p style="color: #6e6e6e;font-size:13px;line-height:24px;">您可以点击<a th:href="${checkUrl}" href="https://github.com/pannanxu/halo-plugin-email">一键审核</a></p>
             </div>
         </div>

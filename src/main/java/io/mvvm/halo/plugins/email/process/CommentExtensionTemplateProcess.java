@@ -1,6 +1,7 @@
 package io.mvvm.halo.plugins.email.process;
 
 import io.mvvm.halo.plugins.email.EmailMessage;
+import io.mvvm.halo.plugins.email.EmailPlugin;
 import io.mvvm.halo.plugins.email.EmailTemplateOptionEnum;
 import io.mvvm.halo.plugins.email.EmallSendEndpoint;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +92,8 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
         context.setVariable("post", post);
         context.setVariable("postOwner", postOwner);
         context.setVariable("comment", comment);
+        context.setVariable("postUrl", EmailPlugin.externalUrlSupplier.get().toString()
+                + tuple.getT2().getStatus().getPermalink());
         return context;
     }
 

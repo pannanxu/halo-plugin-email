@@ -8,6 +8,7 @@ import run.halo.app.extension.Extension;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.SchemeManager;
 import run.halo.app.extension.Watcher;
+import run.halo.app.infra.ExternalUrlSupplier;
 import run.halo.app.infra.SystemConfigurableEnvironmentFetcher;
 import run.halo.app.plugin.BasePlugin;
 import run.halo.app.plugin.HaloPluginManager;
@@ -28,6 +29,7 @@ public class EmailPlugin extends BasePlugin {
     public static EmailProcessManager processManager;
     public static EmailTemplateEngineManager engineManager;
     public static SystemConfigurableEnvironmentFetcher environmentFetcher;
+    public static ExternalUrlSupplier externalUrlSupplier;
 
     public EmailPlugin(PluginWrapper wrapper,
                        SchemeManager schemeManager,
@@ -35,7 +37,8 @@ public class EmailPlugin extends BasePlugin {
                        IEmailService mailService,
                        EmailProcessManager processManager,
                        EmailTemplateEngineManager engineManager,
-                       TemplateResolver templateResolver) {
+                       TemplateResolver templateResolver
+                       ) {
         super(wrapper);
         EmailPlugin.schemeManager = schemeManager;
         EmailPlugin.client = client;
@@ -45,6 +48,8 @@ public class EmailPlugin extends BasePlugin {
         EmailPlugin.templateResolver = templateResolver;
         if (getWrapper().getPluginManager() instanceof HaloPluginManager manager) {
             EmailPlugin.environmentFetcher = manager.getRootApplicationContext().getBean(SystemConfigurableEnvironmentFetcher.class);
+            EmailPlugin.externalUrlSupplier = manager.getRootApplicationContext().getBean(ExternalUrlSupplier.class);
+
         }
     }
 
