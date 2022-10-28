@@ -4,7 +4,7 @@ metadata:
   name: halo-plugin-email
 spec:
   enabled: true
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.2
   requires: "*"
   author: pannanxu
   logo: https://www.mvvm.io/favico.ico

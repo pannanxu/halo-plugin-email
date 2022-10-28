@@ -86,4 +86,4 @@ mailService.send(new EMailRequestPayload(EMallSendEndpoint.ExtensionAdd.name(), 
 ./gradlew -x build
 ```
 
-然后只需复制例如`build/libs/halo-plugin-email-0.0.1-SNAPSHOT-plain.jar` 的 `jar` 包即可使用。
+然后只需复制例如`build/libs/halo-plugin-email-1.0.0-alpha.2-plain.jar` 的 `jar` 包即可使用。
