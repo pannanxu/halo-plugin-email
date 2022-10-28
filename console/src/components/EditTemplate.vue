@@ -1,24 +1,25 @@
 <script lang="ts" setup>
 import {reactive, ref, watch} from "vue";
-import {EmailTemplateExtension} from "@/types";
+import {EmailTemplateExtension, TemplateOption} from "@/types";
+import apiClient from "@/utils/api-client";
 
 const props = defineProps<{ selected: string }>();
 
 let loading = ref<boolean>(false);
 let data = reactive<EmailTemplateExtension>({
+  spec: {
+    template: "classpath:template/comment.html",
+    enable: true
+  },
   apiVersion: "io.mvvm.halo.plugins.email/v1alpha1",
   kind: "EmailTemplateExtension",
   metadata: {
     name: "comment",
-    version: 32,
     labels: {
       "plugin.halo.run/plugin-name": "halo-plugin-email"
     },
-    creationTimestamp: "2022-10-17T11:22:01.200921Z"
-  },
-  spec: {
-    template: "\u003ch1 th:text\u003d\"${post.spec.title}\"\u003e\u003c/h1\u003e",
-    enable: true
+    version: 56,
+    creationTimestamp: "2022-10-25T08:31:07.942124Z"
   }
 });
 
@@ -29,14 +30,17 @@ const handleSubmit = async () => {
   loading.value = false;
 }
 
-const handleFetchTemplateExtension = (name: string) => {
+const handleFetchTemplateExtension = async (name: string) => {
   // TODO load EmailTemplateExtension by selected name
   console.log("handleFetchTemplateExtension...", name)
+  const resp = await apiClient.get<EmailTemplateExtension>(`/apis/io.mvvm.halo.plugins.email/v1alpha1/emailTemplateExtensions/${name}`)
+  console.log('data: ', data)
+  data = resp.data || {}
 }
 
 watch(props, async (newName, oldName) => {
   data.metadata.name = newName.selected;
-  handleFetchTemplateExtension(newName.selected);
+  await handleFetchTemplateExtension(newName.selected);
 })
 
 </script>

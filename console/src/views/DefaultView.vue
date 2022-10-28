@@ -8,7 +8,7 @@ let selected = ref<string>('');
 let options = reactive<TemplateOption[]>([]);
 
 const handleFetchConfig = async () => {
-  const {data} = await apiClient.get<Array<TemplateOption>>('/api/api.plugin.halo.run/v1alpha1/plugins/halo-plugin-email/io.mvvm.halo.plugins.email/templateOptions')
+  const {data} = await apiClient.get<Array<TemplateOption>>('/apis/io.mvvm.halo.plugins.email/templateOptions')
   data.forEach(option => {
     options.push({...option, value: option.name})
   })

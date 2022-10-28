@@ -1,9 +1,8 @@
 package io.mvvm.halo.plugins.email.router;
 
-import io.mvvm.halo.plugins.email.EmailPlugin;
 import io.mvvm.halo.plugins.email.EmailTemplateOption;
-import io.mvvm.halo.plugins.email.EmailTemplateOptionManager;
 import io.mvvm.halo.plugins.email.IEmailService;
+import io.mvvm.halo.plugins.email.EmailPluginManager;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +21,6 @@ public class EmailRouter {
 
     @Resource
     private IEmailService mailService;
-    @Resource
-    private EmailTemplateOptionManager templateOptionManager;
 
     @Bean
     RouterFunction<ServerResponse> testConnectionRouter() {
@@ -34,11 +31,11 @@ public class EmailRouter {
     @Bean
     RouterFunction<ServerResponse> templateOptionRouter() {
         return route(GET(buildRoute("/templateOptions")),
-                request -> ServerResponse.ok().body(templateOptionManager.getOptions(), EmailTemplateOption.class));
+                request -> ServerResponse.ok().body(EmailPluginManager.getOptions(), EmailTemplateOption.class));
     }
 
     String buildRoute(String suffix) {
-        return "/api/api.plugin.halo.run/v1alpha1/plugins/" + EmailPlugin.PLUGIN_ID + "/io.mvvm.halo.plugins.email" + suffix;
+        return "/apis/io.mvvm.halo.plugins.email" + suffix;
     }
 
 }

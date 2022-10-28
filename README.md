@@ -20,55 +20,63 @@ Email plugin for Halo2.0
 1. Releases 下载最新版本
 2. Halo 后台插件安装并启动
 3. 进入 插件设置页面 配置邮件服务器信息
-4. 调用接口测试连接(true为成功,每次修改配置都需要进行测试): `http://ip:port/api/api.plugin.halo.run/v1alpha1/plugins/halo-plugin-email/io.mvvm.halo.plugins.email/testConnection"`
+4. 调用接口测试连接(true为成功,每次修改配置都需要进行测试): `http://ip:port/apis/io.mvvm.halo.plugins.email/testConnection`
 
 ## 第三方插件
 
 邮件插件为第三方插件提供了API，可以自定义邮件发送逻辑
 
-1、注册Option，注册之后可以在后台动态模板内容和开启或关闭
+1. 实现 PluginEmailOperator 接口
 
 ```java
-EmailTemplateOptionManager manager;
-manager.registry(new EmailTemplateOption("comment", "评论模板", "文章收到新的评论时通知文章创建人, 如果需要审核则发送: 「审核模板」"));
-```
+@Getter
+public class RootEmailPluginOperator implements PluginEmailOperator {
 
-2、定义并注册Process
+    private final PluginWrapper pluginWrapper;
+    private final Set<ExtensionTemplateProcess> templateProcess = new CopyOnWriteArraySet<>();
+    private final Set<TemplateLoader> templateLoader = new CopyOnWriteArraySet<>();
+    private final Set<EmailTemplateOption> templateOptions;
 
-```java
-public class CommentExtensionTemplateProcess extends AbstractTemplateProcess {
-    public CommentExtensionTemplateProcess(EMailTemplateEngineManager engineManager) {
-        setEngineManager(engineManager);
+    public RootEmailPluginOperator(PluginWrapper pluginWrapper) {
+        this.pluginWrapper = pluginWrapper;
+        templateProcess.add(new CommentExtensionTemplateProcess());
+        templateLoader.add(new ClassPathTemplateLoader());
+        templateOptions = Arrays.stream(EmailTemplateOptionEnum.values())
+                .map(EmailTemplateOptionEnum::getOption)
+                .collect(Collectors.toSet());
     }
 
-    @Override
-    public String getEndpoint() {
-        // 此处可自定义
-        return EMallSendEndpoint.ExtensionAdd.name();
-    }
-
-    @Override
-    public Flux<EmailMessage> process(Object extension) {
-        if (extension instanceof Comment comment) {
-            Context context = new Context();
-            context.setVariable("comment", comment);
-            String process = process("comment", context);
-            return Flux.just(new EmailMessage("to", "收到新的评论", process));
-        }
-        return Flux.empty();
-    }
 }
 ```
 
+2. 注册 & 卸载
+
 ```java
-EmailProcessManager manager;
-manager.registry(new CommentExtensionTemplateProcess(engineManager));
+@Slf4j
+@Component
+public class EmailPlugin extends BasePlugin {
+
+    public EmailPlugin(PluginWrapper wrapper) {
+        super(wrapper);
+    }
+
+    @Override
+    public void start() {
+        EmailPluginManager.register(new RootEmailPluginOperator(getWrapper()));
+    }
+
+    @Override
+    public void stop() {
+        EmailPluginManager.unregister(getWrapper().getPluginId());
+    }
+}
 ```
 
 3、发送邮件
 
 ```java
-IEMailService mailService;
+@Resource
+private IEMailService mailService;
 mailService.send(new EMailRequestPayload(EMallSendEndpoint.ExtensionAdd.name(), extension))
 ```
 

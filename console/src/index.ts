@@ -8,25 +8,25 @@ export default definePlugin({
   name: "halo-plugin-email",
   components: [],
   routes: [
-    {
-      parentName: "Root",
-      route: {
-        path: "/email",
-        name: "Email",
-        component: DefaultView,
-        meta: {
-          title: "邮件",
-          searchable: true,
-          permissions: ["plugin:halo-plugin-email:view"],
-          menu: {
-            name: "邮件",
-            // group: "tool",
-            icon: markRaw(IconFolder),
-            priority: 0,
-          },
-        },
-      },
-    },
+    // {
+    //   parentName: "Root",
+    //   route: {
+    //     path: "/email",
+    //     name: "Email",
+    //     component: DefaultView,
+    //     meta: {
+    //       title: "邮件",
+    //       searchable: true,
+    //       permissions: ["plugin:halo-plugin-email:manage"],
+    //       menu: {
+    //         name: "邮件",
+    //         // group: "tool",
+    //         icon: markRaw(IconFolder),
+    //         priority: 0,
+    //       },
+    //     },
+    //   },
+    // },
   ],
   extensionPoints: {},
 });

@@ -23,7 +23,7 @@ public abstract class AbstractTemplateProcess implements ExtensionTemplateProces
     protected TemplateResolver templateResolver;
 
     public AbstractTemplateProcess() {
-        this.engineManager = EmailPlugin.engineManager;
+        this.engineManager = EmailPluginManager.getTemplateEngineManager();
         this.environmentFetcher = EmailPlugin.environmentFetcher;
         this.extensionClient = EmailPlugin.client;
         this.templateResolver = EmailPlugin.templateResolver;

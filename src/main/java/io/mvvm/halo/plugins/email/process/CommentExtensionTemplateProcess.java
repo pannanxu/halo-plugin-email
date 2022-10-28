@@ -47,6 +47,7 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
      * @return 需要给系统管理员推送的邮件
      */
     Flux<EmailMessage> auditComment(Comment comment) {
+        log.debug("准备构建审核邮件消息: {}", comment);
         return getEmailServerConfig().flatMapMany(serverConfig -> {
             return fetchPostAndOwner(comment.getSpec().getSubjectRef().getName())
                     .flatMapMany(tuple -> {
@@ -72,6 +73,7 @@ public class CommentExtensionTemplateProcess extends AbstractCommentExtensionTem
      * @return 需要给文章发布者推送的邮件
      */
     Flux<EmailMessage> noNeedAuditComment(Comment comment) {
+        log.debug("准备构建无需审核邮件消息: {}", comment);
         return fetchPostAndOwner(comment.getSpec().getSubjectRef().getName())
                 .filter(tuple -> !tuple.getT1().getSpec().getDisplayName().equals(comment.getSpec().getOwner().getName()))
                 .flatMapMany(tuple -> {

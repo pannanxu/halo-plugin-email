@@ -17,20 +17,18 @@ import run.halo.app.infra.utils.JsonUtils;
 @Component
 public class EmailServiceImpl extends AbstractMailService {
 
-    private final EmailProcessManager processManager;
     private final ReactiveExtensionClient client;
 
-    public EmailServiceImpl(EmailProcessManager processManager,
-                            ReactiveExtensionClient client) {
-        this.processManager = processManager;
+    public EmailServiceImpl(ReactiveExtensionClient client) {
         this.client = client;
     }
 
     @Override
     public void send(EmailRequestPayload payload) {
-        processManager.getProcessFlux(payload.getEndpoint())
+        EmailPluginManager.getProcess(payload.getEndpoint())
                 .publishOn(Schedulers.boundedElastic())
                 .flatMap(process -> process.process(payload.getData()))
+                .publishOn(Schedulers.boundedElastic())
                 .doOnNext(this::doSendEmail)
                 .doOnError(err -> log.error("发送邮件异常: {}", err.getMessage(), err))
                 .subscribe();
@@ -39,10 +37,11 @@ public class EmailServiceImpl extends AbstractMailService {
     void doSendEmail(EmailMessage email) {
         sendMailTemplate(mimeMessageHelper -> {
             try {
+                Thread.sleep(10000);
                 mimeMessageHelper.setTo(email.getTo());
                 mimeMessageHelper.setSubject(email.getSubject());
                 mimeMessageHelper.setText(email.getContent(), true);
-            } catch (MessagingException e) {
+            } catch (MessagingException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });

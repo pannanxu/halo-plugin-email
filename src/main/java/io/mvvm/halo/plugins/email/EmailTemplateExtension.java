@@ -22,6 +22,8 @@ public class EmailTemplateExtension extends AbstractExtension {
     public static class Spec {
 
         @Schema(required = true)
+        private String pluginId;
+        @Schema(required = true)
         private String template;
         @Schema(required = true)
         private boolean enable;

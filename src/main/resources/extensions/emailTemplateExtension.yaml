@@ -3,6 +3,7 @@ kind: EmailTemplateExtension
 metadata:
   name: comment
 spec:
+  pluginId: "halo-plugin-email"
   template: "classpath:template/comment.html"
   enable: true
 
@@ -12,5 +13,6 @@ kind: EmailTemplateExtension
 metadata:
   name: audit
 spec:
+  pluginId: "halo-plugin-email"
   template: "classpath:template/audit.html"
   enable: true

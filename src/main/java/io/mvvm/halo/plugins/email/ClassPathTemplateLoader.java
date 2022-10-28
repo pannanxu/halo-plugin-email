@@ -23,25 +23,28 @@ public class ClassPathTemplateLoader implements TemplateLoader {
     }
 
     @Override
-    public Mono<String> load(String template) {
-        return Mono.just(loadClassPathTemplateContent(template));
+    public Mono<String> load(EmailTemplateExtension extension) {
+        return Mono.just(loadClassPathTemplateContent(extension));
     }
 
-    private String loadClassPathTemplateContent(String template) {
+    private String loadClassPathTemplateContent(EmailTemplateExtension extension) {
+        String template = extension.getSpec().getTemplate();
         try {
-            ClassPathResource resource = new ClassPathResource(template.replace("classpath:", ""), getPluginClassLoader());
+            ClassPathResource resource = new ClassPathResource(template.replace("classpath:", ""),
+                    getPluginClassLoader(extension.getSpec().getPluginId()));
             InputStream in = resource.getInputStream();
             return new BufferedReader(new InputStreamReader(in))
                     .lines()
                     .collect(Collectors.joining(System.lineSeparator()));
         } catch (IOException e) {
-            log.error("加载 classpath 路径下 " + template + "文件失败: " + e.getMessage(), e);
+            log.error("加载 classpath 路径下 {} 文件失败: {}", template, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
 
-    protected ClassLoader getPluginClassLoader() {
-        return this.getClass().getClassLoader();
+    protected ClassLoader getPluginClassLoader(String pluginId) {
+        log.debug("加载 {} 插件 classpath 下的模板", pluginId);
+        return EmailPluginManager.getOperator(pluginId).getPluginWrapper().getPluginClassLoader();
     }
 
 }

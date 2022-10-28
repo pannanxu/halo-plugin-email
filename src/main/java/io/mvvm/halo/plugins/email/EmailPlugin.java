@@ -1,6 +1,5 @@
 package io.mvvm.halo.plugins.email;
 
-import io.mvvm.halo.plugins.email.process.CommentExtensionTemplateProcess;
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginWrapper;
 import org.springframework.stereotype.Component;
@@ -26,8 +25,6 @@ public class EmailPlugin extends BasePlugin {
     public static ReactiveExtensionClient client;
     public static IEmailService mailService;
     public static TemplateResolver templateResolver;
-    public static EmailProcessManager processManager;
-    public static EmailTemplateEngineManager engineManager;
     public static SystemConfigurableEnvironmentFetcher environmentFetcher;
     public static ExternalUrlSupplier externalUrlSupplier;
 
@@ -35,21 +32,16 @@ public class EmailPlugin extends BasePlugin {
                        SchemeManager schemeManager,
                        ReactiveExtensionClient client,
                        IEmailService mailService,
-                       EmailProcessManager processManager,
-                       EmailTemplateEngineManager engineManager,
                        TemplateResolver templateResolver
                        ) {
         super(wrapper);
         EmailPlugin.schemeManager = schemeManager;
         EmailPlugin.client = client;
         EmailPlugin.mailService = mailService;
-        EmailPlugin.processManager = processManager;
-        EmailPlugin.engineManager = engineManager;
         EmailPlugin.templateResolver = templateResolver;
         if (getWrapper().getPluginManager() instanceof HaloPluginManager manager) {
             EmailPlugin.environmentFetcher = manager.getRootApplicationContext().getBean(SystemConfigurableEnvironmentFetcher.class);
             EmailPlugin.externalUrlSupplier = manager.getRootApplicationContext().getBean(ExternalUrlSupplier.class);
-
         }
     }
 
@@ -77,20 +69,18 @@ public class EmailPlugin extends BasePlugin {
 
             }
 
-
             @Override
             public void dispose() {
                 log.info("Watcher dispose");
             }
         });
 
-        processManager.register(new CommentExtensionTemplateProcess());
+        EmailPluginManager.register(new RootEmailPluginOperator(getWrapper()));
     }
 
     @Override
     public void stop() {
         schemeManager.unregister(schemeManager.get(EmailTemplateExtension.class));
-
-        processManager.unregister(EmallSendEndpoint.ExtensionAdd.name(), CommentExtensionTemplateProcess.class);
+        EmailPluginManager.unregister(getWrapper().getPluginId());
     }
 }

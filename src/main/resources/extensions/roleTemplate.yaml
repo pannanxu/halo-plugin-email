@@ -1,0 +1,17 @@
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: role-template-template-view
+  labels:
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/module: "Email Config"
+    rbac.authorization.halo.run/display-name: "邮箱配置管理"
+    rbac.authorization.halo.run/ui-permissions: |
+      [ "plugin:halo-plugin-email:manage" ]
+rules:
+  - nonResourceURLs: [ "/apis/io.mvvm.halo.plugins.email/*" ]
+    verbs: [ "*" ]
+  - apiGroups: [ "io.mvvm.halo.plugins.email" ]
+    resources: [ "*" ]
+    verbs: [ "*" ]

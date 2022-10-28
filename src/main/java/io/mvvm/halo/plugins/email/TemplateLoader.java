@@ -10,5 +10,5 @@ public interface TemplateLoader {
 
     boolean check(EmailTemplateExtension extension);
 
-    Mono<String> load(String template);
+    Mono<String> load(EmailTemplateExtension extension);
 }
