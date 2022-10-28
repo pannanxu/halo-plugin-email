@@ -38,7 +38,8 @@ dependencies {
     compileOnly 'org.pf4j:pf4j:3.6.0'
     compileOnly 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compileOnly 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.0-M6'
-    implementation "org.springframework.boot:spring-boot-starter-mail"
+    compileOnly "org.springframework.boot:spring-boot-starter-mail"
+    implementation "com.sun.mail:jakarta.mail:2.0.1"
 
     compileOnly files("lib/halo-2.0.0-SNAPSHOT-plain.jar")
 
