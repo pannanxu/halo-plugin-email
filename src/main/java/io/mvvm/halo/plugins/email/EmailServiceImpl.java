@@ -37,11 +37,10 @@ public class EmailServiceImpl extends AbstractMailService {
     void doSendEmail(EmailMessage email) {
         sendMailTemplate(mimeMessageHelper -> {
             try {
-                Thread.sleep(10000);
                 mimeMessageHelper.setTo(email.getTo());
                 mimeMessageHelper.setSubject(email.getSubject());
                 mimeMessageHelper.setText(email.getContent(), true);
-            } catch (MessagingException | InterruptedException e) {
+            } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
         });
