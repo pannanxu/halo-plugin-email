@@ -4,14 +4,12 @@ Email plugin for Halo2.0
 
 ![img.png](doc/images/无需审核模板.png)
 
-![img.png](doc/images/需要审核模板.png)
-
 ## 功能
 
 - [x] 新评论邮件通知
 - [x] 为第三方插件提供邮件通知API
-- [ ] 评论审核邮件通知
-- [ ] 新回复邮件通知
+- [x] 评论审核邮件通知
+- [x] 新回复邮件通知
 - [ ] 文章审核通知
 - [ ] 自定义通知模板
 
@@ -26,58 +24,28 @@ Email plugin for Halo2.0
 
 邮件插件为第三方插件提供了API，可以自定义邮件发送逻辑
 
-1. 实现 PluginEmailOperator 接口
+### 方式一
+
+此方法异步实现，可以实现简单的邮件发送
 
 ```java
-@Getter
-public class RootEmailPluginOperator implements PluginEmailOperator {
-
-    private final PluginWrapper pluginWrapper;
-    private final Set<ExtensionTemplateProcess> templateProcess = new CopyOnWriteArraySet<>();
-    private final Set<TemplateLoader> templateLoader = new CopyOnWriteArraySet<>();
-    private final Set<EmailTemplateOption> templateOptions;
-
-    public RootEmailPluginOperator(PluginWrapper pluginWrapper) {
-        this.pluginWrapper = pluginWrapper;
-        templateProcess.add(new CommentExtensionTemplateProcess());
-        templateLoader.add(new ClassPathTemplateLoader());
-        templateOptions = Arrays.stream(EmailTemplateOptionEnum.values())
-                .map(EmailTemplateOptionEnum::getOption)
-                .collect(Collectors.toSet());
-    }
-
-}
-```
-
-2. 注册 & 卸载
-
-```java
-@Slf4j
-@Component
-public class EmailPlugin extends BasePlugin {
-
-    public EmailPlugin(PluginWrapper wrapper) {
-        super(wrapper);
-    }
-
-    @Override
-    public void start() {
-        EmailPluginManager.register(new RootEmailPluginOperator(getWrapper()));
-    }
-
-    @Override
-    public void stop() {
-        EmailPluginManager.unregister(getWrapper().getPluginId());
-    }
-}
-```
-
-3、发送邮件
-
-```java
+// 注入接口
 @Resource
-private IEMailService mailService;
-mailService.send(new EMailRequestPayload(EMallSendEndpoint.ExtensionAdd.name(), extension))
+private MailPublisher publisher;
+// 调用方法
+publisher.publish(MailMessage message);
+```
+
+### 方式二
+
+此方式发送会阻塞等待发送结果
+
+```java
+// 注入接口
+@Resource
+private MailService mailService;
+// 调用方法
+mailService.send(MailMessage message);
 ```
 
 ## 构建生产产物

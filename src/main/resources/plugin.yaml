@@ -4,12 +4,14 @@ metadata:
   name: halo-plugin-email
 spec:
   enabled: true
-  version: 1.0.0-alpha.2
+  version: 1.0.0
   requires: "*"
-  author: pannanxu
+  author:
+    name: pannanxu
+    website: https://github.com/pannanxu/halo-plugin-email
   logo: https://www.mvvm.io/favico.ico
-  settingName: halo-plugin-email-settings
-  configMapName: halo-plugin-email-settings
+  settingName: mail-settings
+  configMapName: mail-settings
   homepage: https://github.com/pannanxu/halo-plugin-email
   displayName: "邮件通知"
   description: "Halo邮件通知插件"

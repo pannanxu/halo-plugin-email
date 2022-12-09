@@ -1,7 +1,7 @@
 apiVersion: v1alpha1
 kind: Setting
 metadata:
-  name: halo-plugin-email-settings
+  name: mail-settings
 spec:
   forms:
     - group: basic
@@ -14,12 +14,8 @@ spec:
           validation: required
           value: false
         - $formkit: text
-          label: 管理员邮箱
-          name: adminEmail
-          validation: required
-        - $formkit: text
           label: FormName
-          name: formName
+          name: form
           validation: required
         - $formkit: text
           help: smtp.qq.com.
@@ -47,8 +43,8 @@ spec:
           name: protocol
           validation: required
         - $formkit: checkbox
-          help: startTls.
-          label: startTls
-          name: startTls
+          help: enableTls.
+          label: Tls
+          name: enableTls
           validation: required
           value: false
