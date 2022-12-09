@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'io.mvvm.halo.plugin'
-version '1.0.0-alpha.2'
+version '1.0.0'
 sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
