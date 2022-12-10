@@ -40,10 +40,10 @@ jobs:
     needs: build
     if: github.event_name == 'release'
     steps:
-      - name: Download plugin-starter jar
+      - name: Download halo-plugin-email jar
         uses: actions/download-artifact@v2
         with:
-          name: plugin-starter
+          name: halo-plugin-email
           path: build/libs
       - name: Get Name of Artifact
         id: get_artifact
