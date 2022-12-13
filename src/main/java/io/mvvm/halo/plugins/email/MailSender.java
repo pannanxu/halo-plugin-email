@@ -84,7 +84,7 @@ public class MailSender {
             // send email
             sender.send(mimeMessage);
 
-            log.debug("Sent an email to [{}] successfully, subject: [{}], sent date: [{}]",
+            log.info("Sent an email to [{}] successfully, subject: [{}], sent date: [{}]",
                     Arrays.toString(mimeMessage.getAllRecipients()),
                     mimeMessage.getSubject(),
                     mimeMessage.getSentDate());

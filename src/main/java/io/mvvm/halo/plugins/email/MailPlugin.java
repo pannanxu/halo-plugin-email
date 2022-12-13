@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.infra.ExternalUrlSupplier;
 import run.halo.app.plugin.BasePlugin;
-import run.halo.app.plugin.HaloPluginManager;
 import run.halo.app.plugin.SettingFetcher;
 
 /**
@@ -24,20 +23,16 @@ public class MailPlugin extends BasePlugin {
                       ReactiveExtensionClient client,
                       ExternalUrlSupplier externalUrlSupplier,
                       SettingFetcher settingFetcher,
-                      MailSystemConfigurableEnvironmentFetcher mailSystemConfigurableEnvironmentFetcher,
+                      MailSystemConfigurableEnvironmentFetcher environmentFetcher,
                       MailPublisher mailPublisher,
                       MailService mailService) {
         super(wrapper);
         this.mailPublisher = mailPublisher;
         this.mailService = mailService;
-        if (getWrapper().getPluginManager() instanceof HaloPluginManager manager) {
-//            MailBeanContext.environmentFetcher = manager.getRootApplicationContext().getBean(SystemConfigurableEnvironmentFetcher.class);
-//            MailBeanContext.externalUrlSupplier = manager.getRootApplicationContext().getBean(ExternalUrlSupplier.class);
-            MailBeanContext.environmentFetcher = mailSystemConfigurableEnvironmentFetcher;
-            MailBeanContext.externalUrlSupplier = externalUrlSupplier;
-            MailBeanContext.client = client;
-            MailBeanContext.settingFetcher = settingFetcher;
-        }
+        MailBeanContext.environmentFetcher = environmentFetcher;
+        MailBeanContext.externalUrlSupplier = externalUrlSupplier;
+        MailBeanContext.client = client;
+        MailBeanContext.settingFetcher = settingFetcher;
     }
 
     @Override

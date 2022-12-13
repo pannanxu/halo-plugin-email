@@ -2,7 +2,6 @@ package io.mvvm.halo.plugins.email.comment;
 
 import io.mvvm.halo.plugins.email.MailBeanContext;
 import io.mvvm.halo.plugins.email.MailPublisher;
-import io.mvvm.halo.plugins.email.support.MailServerConfig;
 import io.mvvm.halo.plugins.email.support.SimpleMailMessage;
 import io.mvvm.halo.plugins.email.template.ResourceTemplateProcess;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.User;
 import run.halo.app.core.extension.content.Comment;
 import run.halo.app.core.extension.content.Post;
-import run.halo.app.extension.ConfigMap;
 import run.halo.app.infra.utils.JsonUtils;
 
 /**
@@ -27,19 +25,8 @@ public class CommentPipelines {
             .doOnNext(context::setCommentSetting)
             .thenReturn(context);
 
-    //    public final CommentPipeline mailServerConfig = (context) -> MailBeanContext.settingFetcher
-//            .fetch(MailServerConfig.GROUP, MailServerConfig.class)
-//            .map(Mono::just)
-//            .orElse(Mono.empty())
-//            .doOnNext(context::setServerConfig)
-//            .thenReturn(context);
-    public final CommentPipeline mailServerConfig = (context) -> MailBeanContext.client
-            .get(ConfigMap.class, MailServerConfig.NAME)
-            .map(ConfigMap::getData)
-            .map(config -> {
-                String basic = config.get(MailServerConfig.GROUP);
-                return JsonUtils.jsonToObject(basic, MailServerConfig.class);
-            })
+    public final CommentPipeline mailServerConfig = (context) -> MailBeanContext.environmentFetcher
+            .fetchMailServer()
             .doOnNext(context::setServerConfig)
             .thenReturn(context);
 
@@ -85,6 +72,7 @@ public class CommentPipelines {
      * 审核评论/回复邮件通知管理员.
      **/
     public final CommentPipeline auditMailSender = (context) -> Mono.defer(() -> {
+        log.info("Comment replyTargetCommentUserMailSender pipeline: {}", JsonUtils.objectToJson(context));
         if (!context.requireReviewForNew()) {
             log.debug("Comment replyTargetCommentUserMailSender pipeline: 未开启审核，暂不发送管理员审核通知");
             return Mono.just(context);

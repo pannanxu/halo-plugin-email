@@ -34,29 +34,38 @@ public class MailSystemConfigurableEnvironmentFetcher {
         this.extensionClient = extensionClient;
     }
 
-    public <T> Mono<T> fetch(String key, Class<T> type) {
-        return getValuesInternal()
-            .filter(map -> map.containsKey(key))
-            .map(map -> map.get(key))
-            .mapNotNull(stringValue -> JsonUtils.jsonToObject(stringValue, type));
+    public <T> Mono<T> fetchSystemConfig(String key, Class<T> type) {
+        return fetch(SystemSetting.SYSTEM_CONFIG_DEFAULT, key, type);
+    }
+
+    public <T> Mono<T> fetch(String name, String key, Class<T> type) {
+        return getValuesInternal(name)
+                .filter(map -> map.containsKey(key))
+                .map(map -> map.get(key))
+                .mapNotNull(stringValue -> JsonUtils.jsonToObject(stringValue, type));
     }
 
     public Mono<SystemSetting.Comment> fetchComment() {
-        return fetch(SystemSetting.Comment.GROUP, SystemSetting.Comment.class)
-            .switchIfEmpty(Mono.just(new SystemSetting.Comment()));
+        return fetchSystemConfig(SystemSetting.Comment.GROUP, SystemSetting.Comment.class)
+                .switchIfEmpty(Mono.just(new SystemSetting.Comment()));
     }
 
     public Mono<SystemSetting.Post> fetchPost() {
-        return fetch(SystemSetting.Post.GROUP, SystemSetting.Post.class)
-            .switchIfEmpty(Mono.just(new SystemSetting.Post()));
+        return fetchSystemConfig(SystemSetting.Post.GROUP, SystemSetting.Post.class)
+                .switchIfEmpty(Mono.just(new SystemSetting.Post()));
+    }
+
+    public Mono<MailServerConfig> fetchMailServer() {
+        return fetch(MailServerConfig.NAME, MailServerConfig.GROUP, MailServerConfig.class)
+                .switchIfEmpty(Mono.empty());
     }
 
     @NonNull
-    private Mono<Map<String, String>> getValuesInternal() {
-        return getConfigMap()
-            .filter(configMap -> configMap.getData() != null)
-            .map(ConfigMap::getData)
-            .defaultIfEmpty(Map.of());
+    private Mono<Map<String, String>> getValuesInternal(String name) {
+        return getConfigMap(SystemSetting.SYSTEM_CONFIG_DEFAULT)
+                .filter(configMap -> configMap.getData() != null)
+                .map(ConfigMap::getData)
+                .defaultIfEmpty(Map.of());
     }
 
     /**
@@ -64,26 +73,26 @@ public class MailSystemConfigurableEnvironmentFetcher {
      *
      * @return a new {@link ConfigMap} named <code>system</code> by json merge patch.
      */
-    public Mono<ConfigMap> getConfigMap() {
+    public Mono<ConfigMap> getConfigMap(String name) {
         Mono<ConfigMap> mapMono =
-            extensionClient.fetch(ConfigMap.class, SystemSetting.SYSTEM_CONFIG_DEFAULT);
+                extensionClient.fetch(ConfigMap.class, name);
         if (mapMono == null) {
             return Mono.empty();
         }
         return mapMono.flatMap(systemDefault ->
                 extensionClient.fetch(ConfigMap.class, SystemSetting.SYSTEM_CONFIG)
-                    .map(system -> {
-                        Map<String, String> defaultData = systemDefault.getData();
-                        Map<String, String> data = system.getData();
-                        Map<String, String> mergedData = mergeData(defaultData, data);
-                        system.setData(mergedData);
-                        return system;
-                    })
-                    .switchIfEmpty(Mono.just(systemDefault)));
+                        .map(system -> {
+                            Map<String, String> defaultData = systemDefault.getData();
+                            Map<String, String> data = system.getData();
+                            Map<String, String> mergedData = mergeData(defaultData, data);
+                            system.setData(mergedData);
+                            return system;
+                        })
+                        .switchIfEmpty(Mono.just(systemDefault)));
     }
 
     private Map<String, String> mergeData(Map<String, String> defaultData,
-        Map<String, String> data) {
+                                          Map<String, String> data) {
         if (defaultData == null) {
             return data;
         }
@@ -133,6 +142,6 @@ public class MailSystemConfigurableEnvironmentFetcher {
 
     JsonNode nullSafeToJsonNode(String json) {
         return StringUtils.isBlank(json) ? JsonNodeFactory.instance.nullNode()
-            : JsonUtils.jsonToObject(json, JsonNode.class);
+                : JsonUtils.jsonToObject(json, JsonNode.class);
     }
 }
