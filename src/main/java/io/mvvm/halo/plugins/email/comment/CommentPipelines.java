@@ -27,6 +27,12 @@ public class CommentPipelines {
             .doOnNext(context::setCommentSetting)
             .thenReturn(context);
 
+    //    public final CommentPipeline mailServerConfig = (context) -> MailBeanContext.settingFetcher
+//            .fetch(MailServerConfig.GROUP, MailServerConfig.class)
+//            .map(Mono::just)
+//            .orElse(Mono.empty())
+//            .doOnNext(context::setServerConfig)
+//            .thenReturn(context);
     public final CommentPipeline mailServerConfig = (context) -> MailBeanContext.client
             .get(ConfigMap.class, MailServerConfig.NAME)
             .map(ConfigMap::getData)
@@ -79,7 +85,6 @@ public class CommentPipelines {
      * 审核评论/回复邮件通知管理员.
      **/
     public final CommentPipeline auditMailSender = (context) -> Mono.defer(() -> {
-        log.info("Comment replyTargetCommentUserMailSender pipeline: {}", JsonUtils.objectToJson(context));
         if (!context.requireReviewForNew()) {
             log.debug("Comment replyTargetCommentUserMailSender pipeline: 未开启审核，暂不发送管理员审核通知");
             return Mono.just(context);
