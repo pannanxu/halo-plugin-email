@@ -19,6 +19,8 @@ public interface MailMessage {
 
     String content();
 
+    String fromName();
+
     void setTo(String to);
 
     void setSubject(String subject);

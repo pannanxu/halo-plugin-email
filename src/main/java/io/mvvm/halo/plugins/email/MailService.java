@@ -9,8 +9,6 @@ import io.mvvm.halo.plugins.email.support.MailServerConfig;
  **/
 public interface MailService {
 
-    MailServerConfig getCachedConfig();
-
     Boolean connection(MailServerConfig config);
 
     boolean send(MailMessage message);

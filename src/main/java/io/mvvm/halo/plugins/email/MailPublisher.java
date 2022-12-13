@@ -1,5 +1,7 @@
 package io.mvvm.halo.plugins.email;
 
+import reactor.core.publisher.Mono;
+
 /**
  * MailPublisher.
  *
@@ -15,5 +17,9 @@ public interface MailPublisher {
      * @return true or false
      */
     boolean publish(MailMessage message);
+
+    default Mono<Boolean> publishReactive(MailMessage message) {
+        return Mono.just(publish(message));
+    }
 
 }

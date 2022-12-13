@@ -2,6 +2,7 @@ package io.mvvm.halo.plugins.email.support;
 
 import io.mvvm.halo.plugins.email.MailMessage;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /**
  * SimpleMessage.
@@ -9,11 +10,14 @@ import lombok.Setter;
  * @author: pan
  **/
 @Setter
+@SuperBuilder
 public class SimpleMailMessage implements MailMessage {
 
     private String to;
     private String subject;
     private String content;
+    
+    private String fromName;
 
     public SimpleMailMessage(String to) {
         this.to = to;
@@ -34,4 +38,8 @@ public class SimpleMailMessage implements MailMessage {
         return this.content;
     }
 
+    @Override
+    public String fromName() {
+        return this.fromName;
+    }
 }

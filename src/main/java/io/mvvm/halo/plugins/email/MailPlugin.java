@@ -16,7 +16,7 @@ import run.halo.app.plugin.HaloPluginManager;
 @Slf4j
 @Component
 public class MailPlugin extends BasePlugin {
-    public final MailPublisher mailPublisher;
+    public MailPublisher mailPublisher;
     public MailService mailService;
 
     public MailPlugin(PluginWrapper wrapper,
@@ -35,7 +35,7 @@ public class MailPlugin extends BasePlugin {
 
     @Override
     public void start() {
-        MailBeanContext.client.watch(new MailWatcher(mailPublisher, mailService));
+        MailBeanContext.client.watch(new MailWatcher(mailPublisher));
     }
 
     @Override

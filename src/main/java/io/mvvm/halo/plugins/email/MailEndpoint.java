@@ -1,7 +1,6 @@
 package io.mvvm.halo.plugins.email;
 
 import io.mvvm.halo.plugins.email.support.MailServerConfig;
-import io.mvvm.halo.plugins.email.support.SimpleMailMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -22,24 +21,35 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class MailEndpoint {
 
     private final MailService mailService;
-    private final MailPublisher publisher;
 
-    public MailEndpoint(MailService mailService, MailPublisher publisher) {
+    public MailEndpoint(MailService mailService) {
         this.mailService = mailService;
-        this.publisher = publisher;
+
+        // 启动时加载一次配置
+        new Thread(() -> {
+            while (true) {
+                if (null != MailBeanContext.client) {
+                    break;
+                }
+            }
+            testConnection().subscribe();
+        }, "Mail-test-connection").start();
     }
 
     @Bean
     public RouterFunction<ServerResponse> testConnectionRouter() {
         return route(GET("/apis/io.mvvm.halo.plugins.email/testConnection"),
-                request -> MailBeanContext.client.get(ConfigMap.class, MailServerConfig.NAME)
-                        .map(ConfigMap::getData)
-                        .map(config -> {
-                            String basic = config.get(MailServerConfig.GROUP);
-                            return JsonUtils.jsonToObject(basic, MailServerConfig.class);
-                        })
-                        .flatMap(config -> Mono.just(mailService.connection(config)))
-                        .flatMap(result -> ServerResponse.ok().bodyValue(result)));
+                request -> testConnection().flatMap(result -> ServerResponse.ok().bodyValue(result)));
+    }
+
+    Mono<Boolean> testConnection() {
+        return MailBeanContext.client.get(ConfigMap.class, MailServerConfig.NAME)
+                .map(ConfigMap::getData)
+                .map(config -> {
+                    String basic = config.get(MailServerConfig.GROUP);
+                    return JsonUtils.jsonToObject(basic, MailServerConfig.class);
+                })
+                .flatMap(config -> Mono.just(mailService.connection(config)));
     }
 
 }

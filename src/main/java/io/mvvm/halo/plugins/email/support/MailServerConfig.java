@@ -18,7 +18,9 @@ public class MailServerConfig extends MailProperties {
     
     private boolean enable;
 
-    private String form;
+    private String adminMail;
+    
+    private String fromName;
 
     private boolean enableTls;
 }
