@@ -3,7 +3,9 @@ package io.mvvm.halo.plugins.email.comment;
 import io.mvvm.halo.plugins.email.MailBeanContext;
 import io.mvvm.halo.plugins.email.MailPublisher;
 import io.mvvm.halo.plugins.email.support.SimpleMailMessage;
-import io.mvvm.halo.plugins.email.template.ResourceTemplateProcess;
+import io.mvvm.halo.plugins.email.template.ComposeThemeResolver;
+import io.mvvm.halo.plugins.email.template.ProcessTemplateResolver;
+import io.mvvm.halo.plugins.email.template.TemplateResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
@@ -67,7 +69,7 @@ public class CommentPipelines {
             .doOnNext(context::setReplyUser)
             .thenReturn(context);
     private MailPublisher mailPublisher = null;
-    private ResourceTemplateProcess resourceTemplateProcess = null;
+    private TemplateResolver resolver = null;
     /**
      * 审核评论/回复邮件通知管理员.
      **/
@@ -81,7 +83,7 @@ public class CommentPipelines {
             log.debug("Comment replyTargetCommentUserMailSender pipeline: 管理员邮箱为空，暂不发送通知");
             return Mono.just(context);
         }
-        return resourceTemplateProcess.processReactive(CommentTemplateType.Audit, context)
+        return resolver.processReactive(CommentTemplateType.Audit, context)
                 .map(html -> SimpleMailMessage.builder()
                         .to(context.getServerConfig().getAdminMail())
                         .content(html)
@@ -103,7 +105,7 @@ public class CommentPipelines {
             log.debug("Comment replyTargetCommentUserMailSender pipeline: 文章创建人和评论人相同，无需发送");
             return Mono.just(context);
         }
-        return resourceTemplateProcess.processReactive(CommentTemplateType.Comment, context)
+        return resolver.processReactive(CommentTemplateType.Comment, context)
                 .map(html -> SimpleMailMessage.builder()
                         .to(context.getPostOwner().getSpec().getEmail())
                         .content(html)
@@ -128,7 +130,7 @@ public class CommentPipelines {
             log.debug("Comment replyTargetCommentUserMailSender pipeline: 回复人和评论人相同，无需发送");
             return Mono.just(context);
         }
-        return resourceTemplateProcess.processReactive(CommentTemplateType.Reply, context)
+        return resolver.processReactive(CommentTemplateType.Reply, context)
                 .map(html -> SimpleMailMessage.builder()
                         .to(context.getCommentUser().getSpec().getEmail())
                         .content(html)
@@ -140,7 +142,7 @@ public class CommentPipelines {
 
     public CommentPipelines(MailPublisher mailPublisher) {
         this.mailPublisher = mailPublisher;
-        this.resourceTemplateProcess = new ResourceTemplateProcess();
+        this.resolver = new ProcessTemplateResolver(new ComposeThemeResolver());
     }
 
     Mono<User> fetchUser(String username) {

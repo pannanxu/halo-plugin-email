@@ -27,10 +27,10 @@ import java.util.Map;
  * @since 2.0.0
  */
 @Component
-public class MailSystemConfigurableEnvironmentFetcher {
+public class MailEnvironmentFetcher {
     private final ReactiveExtensionClient extensionClient;
 
-    public MailSystemConfigurableEnvironmentFetcher(ReactiveExtensionClient extensionClient) {
+    public MailEnvironmentFetcher(ReactiveExtensionClient extensionClient) {
         this.extensionClient = extensionClient;
     }
 
@@ -53,6 +53,11 @@ public class MailSystemConfigurableEnvironmentFetcher {
     public Mono<SystemSetting.Post> fetchPost() {
         return fetchSystemConfig(SystemSetting.Post.GROUP, SystemSetting.Post.class)
                 .switchIfEmpty(Mono.just(new SystemSetting.Post()));
+    }
+
+    public Mono<String> fetchActiveTheme() {
+        return fetchSystemConfig(SystemSetting.Theme.GROUP, SystemSetting.Theme.class)
+                .map(SystemSetting.Theme::getActive);
     }
 
     public Mono<MailServerConfig> fetchMailServer() {

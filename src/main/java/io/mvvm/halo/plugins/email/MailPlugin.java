@@ -1,6 +1,6 @@
 package io.mvvm.halo.plugins.email;
 
-import io.mvvm.halo.plugins.email.support.MailSystemConfigurableEnvironmentFetcher;
+import io.mvvm.halo.plugins.email.support.MailEnvironmentFetcher;
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginWrapper;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class MailPlugin extends BasePlugin {
                       ReactiveExtensionClient client,
                       ExternalUrlSupplier externalUrlSupplier,
                       SettingFetcher settingFetcher,
-                      MailSystemConfigurableEnvironmentFetcher environmentFetcher,
+                      MailEnvironmentFetcher environmentFetcher,
                       MailPublisher mailPublisher,
                       MailService mailService) {
         super(wrapper);
