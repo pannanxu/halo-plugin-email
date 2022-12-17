@@ -27,4 +27,5 @@ public class ProcessTemplateResolver implements TemplateResolver {
         return resolver.processReactive(template, variables)
                 .map(temp -> engine.process(temp, context));
     }
+
 }

@@ -5,6 +5,7 @@ import io.mvvm.halo.plugins.email.comment.CommentTemplateType;
 import io.mvvm.halo.plugins.email.comment.ReplyCommentContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.thymeleaf.context.Context;
 import reactor.core.publisher.Mono;
 
 import java.io.BufferedReader;

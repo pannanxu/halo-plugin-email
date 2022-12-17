@@ -22,12 +22,11 @@ public enum CommentTemplateType {
     /**
      * 审核模板
      */
-    Audit(new MailTemplateDefinition("评论审核模板", "您的博客日志有了新的评论需要审核", "template/audit.html")),
-//    /**
-//     * 审核通过模板
-//     */
-//    AuditSuccess(new MailTemplateDefinition("auditSuccess", "评论审核通过模板", "评论审核通过后通知, 通知评论人。" +
-//            " 同时如果是回复评论则使用：「回复模板」进行通知；如果是新评论则使用：「评论模板」通知")),
+    Audit(new MailTemplateDefinition("评论审核模板", "您的博客日志有了新的评论需要审核！", "template/audit.html")),
+    /**
+     * 审核通过模板
+     */
+    AuditSuccess(new MailTemplateDefinition("评论审核通过模板", "您的评论审核已通过！", "template/auditSuccess.html")),
 //    /**
 //     * 审核拒绝模板
 //     */

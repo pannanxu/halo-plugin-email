@@ -12,7 +12,8 @@ import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.User;
 import run.halo.app.core.extension.content.Comment;
 import run.halo.app.core.extension.content.Post;
-import run.halo.app.infra.utils.JsonUtils;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * CommentPipelines.
@@ -74,13 +75,10 @@ public class CommentPipelines {
      * 审核评论/回复邮件通知管理员.
      **/
     public final CommentPipeline auditMailSender = (context) -> Mono.defer(() -> {
-        log.info("Comment replyTargetCommentUserMailSender pipeline: {}", JsonUtils.objectToJson(context));
         if (!context.requireReviewForNew()) {
-            log.debug("Comment replyTargetCommentUserMailSender pipeline: 未开启审核，暂不发送管理员审核通知");
             return Mono.just(context);
         }
         if (!StringUtils.hasLength(context.getServerConfig().getAdminMail())) {
-            log.debug("Comment replyTargetCommentUserMailSender pipeline: 管理员邮箱为空，暂不发送通知");
             return Mono.just(context);
         }
         return resolver.processReactive(CommentTemplateType.Audit, context)
@@ -97,12 +95,10 @@ public class CommentPipelines {
      */
     public final CommentPipeline commentPostOwnerMailSender = (context) -> Mono.defer(() -> {
         if (context.requireReviewForNew()) {
-            log.debug("Comment replyTargetCommentUserMailSender pipeline: 开启审核，暂不给文章作者发送通知");
             return Mono.just(context);
         }
         if (null != context.getReplyComment()
                 && context.getPostOwner().getSpec().getEmail().equals(context.getReplyUser().getSpec().getEmail())) {
-            log.debug("Comment replyTargetCommentUserMailSender pipeline: 文章创建人和评论人相同，无需发送");
             return Mono.just(context);
         }
         return resolver.processReactive(CommentTemplateType.Comment, context)
@@ -119,15 +115,12 @@ public class CommentPipelines {
      */
     public final CommentPipeline replyTargetCommentUserMailSender = (context) -> Mono.defer(() -> {
         if (context.requireReviewForNew()) {
-            log.debug("Comment replyTargetCommentUserMailSender pipeline: 开启审核，暂不给被回复的评论人发送通知");
             return Mono.just(context);
         }
         if (!context.getComment().getSpec().getAllowNotification()) {
-            log.debug("Comment replyTargetCommentUserMailSender pipeline: 评论人未开启消息提醒，无需发送");
             return Mono.just(context);
         }
         if (context.getCommentUser().getSpec().getEmail().equals(context.getReplyUser().getSpec().getEmail())) {
-            log.debug("Comment replyTargetCommentUserMailSender pipeline: 回复人和评论人相同，无需发送");
             return Mono.just(context);
         }
         return resolver.processReactive(CommentTemplateType.Reply, context)
@@ -135,6 +128,24 @@ public class CommentPipelines {
                         .to(context.getCommentUser().getSpec().getEmail())
                         .content(html)
                         .subject(CommentTemplateType.Reply.getDefinition().subject())
+                        .build())
+                .doOnNext(mailPublisher::publish)
+                .thenReturn(context);
+    });
+
+    /**
+     * 评论审核通过通知。
+     */
+    public final CommentPipeline commentUserAuditSuccessMailSender = (context) -> Mono.defer(() -> {
+        AtomicReference<String> email = new AtomicReference<>(context.getCommentUser().getSpec().getEmail());
+        if (null != context.getReplyComment()) {
+            email.set(context.getReplyUser().getSpec().getEmail());
+        }
+        return resolver.processReactive(CommentTemplateType.AuditSuccess, context)
+                .map(html -> SimpleMailMessage.builder()
+                        .to(email.get())
+                        .content(html)
+                        .subject(CommentTemplateType.AuditSuccess.getDefinition().subject())
                         .build())
                 .doOnNext(mailPublisher::publish)
                 .thenReturn(context);

@@ -1,6 +1,5 @@
 package io.mvvm.halo.plugins.email;
 
-import io.mvvm.halo.plugins.email.comment.CommentPipelines;
 import io.mvvm.halo.plugins.email.comment.CommentSender;
 import run.halo.app.core.extension.content.Comment;
 import run.halo.app.core.extension.content.Reply;
@@ -17,8 +16,7 @@ public class MailWatcher implements Watcher {
     private final CommentSender commentSender;
 
     public MailWatcher(MailPublisher mailPublisher) {
-        CommentPipelines pipelines = new CommentPipelines(mailPublisher);
-        this.commentSender = new CommentSender(pipelines);
+        this.commentSender = new CommentSender(mailPublisher);
     }
 
     @Override
@@ -35,6 +33,12 @@ public class MailWatcher implements Watcher {
     @Override
     public void onUpdate(Extension oldExtension, Extension newExtension) {
         Watcher.super.onUpdate(oldExtension, newExtension);
+        if (oldExtension instanceof Comment comment && newExtension instanceof Comment newComment) {
+            commentSender.pipeline(comment, newComment).subscribe();
+        }
+        if (oldExtension instanceof Reply reply && newExtension instanceof Reply newReply) {
+            commentSender.pipeline(reply, newReply).subscribe();
+        }
     }
 
     @Override

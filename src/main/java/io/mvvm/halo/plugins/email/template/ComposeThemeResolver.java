@@ -16,7 +16,7 @@ public class ComposeThemeResolver implements TemplateResolver {
     private final TemplateResolver theme;
 
     public ComposeThemeResolver() {
-        this.resource = new ResourceTemplateResolver();
+        this.resource = new MailPluginCacheTemplateResolver();
         this.theme = new ThemeTemplateResolver(MailBeanContext.environmentFetcher);
     }
 

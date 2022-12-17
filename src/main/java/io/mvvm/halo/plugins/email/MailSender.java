@@ -63,7 +63,7 @@ public class MailSender {
     }
 
     public Boolean send(MailMessage message) {
-        if (null == message.to() || !message.to().contains("@")) {
+        if (!message.checkParams()) {
             return Boolean.FALSE;
         }
         
