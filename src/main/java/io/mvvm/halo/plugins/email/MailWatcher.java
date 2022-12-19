@@ -33,12 +33,17 @@ public class MailWatcher implements Watcher {
     @Override
     public void onUpdate(Extension oldExtension, Extension newExtension) {
         Watcher.super.onUpdate(oldExtension, newExtension);
-        if (oldExtension instanceof Comment comment && newExtension instanceof Comment newComment) {
-            commentSender.pipeline(comment, newComment).subscribe();
-        }
-        if (oldExtension instanceof Reply reply && newExtension instanceof Reply newReply) {
-            commentSender.pipeline(reply, newReply).subscribe();
-        }
+
+        // TODO 目前无法在此处感知操作是否是审核通过
+//        if ("Comment".equals(oldExtension.getKind())) {
+//            Comment oldComment = JsonUtils.jsonToObject(JsonUtils.objectToJson(oldExtension), Comment.class);
+//            Comment newComment = JsonUtils.jsonToObject(JsonUtils.objectToJson(newExtension), Comment.class);
+//            commentSender.pipeline(oldComment, newComment).subscribe();
+//        } else if ("Reply".equals(oldExtension.getKind())) {
+//            Reply oldReply = JsonUtils.jsonToObject(JsonUtils.objectToJson(oldExtension), Reply.class);
+//            Reply newReply = JsonUtils.jsonToObject(JsonUtils.objectToJson(newExtension), Reply.class);
+//            commentSender.pipeline(oldReply, newReply).subscribe();
+//        }
     }
 
     @Override

@@ -11,42 +11,44 @@ spec:
           help: "测试连接打开地址: http://ip:port/apis/io.mvvm.halo.plugins.email/testConnection"
           label: 启用邮件通知
           name: enable
-          value: false
+          value: true
         - $formkit: text
           label: 管理员邮箱
           name: adminMail
           validation: required
+          help: "有评论需要审核时会通知此邮箱"
         - $formkit: text
           label: FromName
           name: fromName
           validation: required
+          help: "发送邮箱时展示的名称"
         - $formkit: text
-          help: smtp.qq.com.
+          help: "邮件服务器地址。如QQ邮箱：smtp.qq.com."
           label: Host
           name: host
           validation: required
         - $formkit: text
-          help: 465.
+          help: "邮件服务器端口。如TSL：465."
           label: Port
           name: port
           validation: required
         - $formkit: text
-          help: username.
+          help: "邮件服务器的账号。如：123@qq.com."
           label: Username
           name: username
           validation: required
         - $formkit: text
-          help: password.
+          help: " 邮件服务器的密码。非邮件的登陆密码."
           label: Password
           name: password
           validation: required
         - $formkit: text
-          help: smtps, smtp.
+          help: "邮件服务器的协议。如：smtps, smtp."
           label: Protocol
           name: protocol
           validation: required
         - $formkit: checkbox
-          help: enableTls.
-          label: Tls
+          help: "是否开启TLS."
+          label: TLS
           name: enableTls
           value: false

@@ -3,6 +3,7 @@ package io.mvvm.halo.plugins.email.comment;
 import io.mvvm.halo.plugins.email.MailPublisher;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import run.halo.app.core.extension.content.Comment;
 import run.halo.app.core.extension.content.Reply;
 
@@ -39,6 +40,7 @@ public class CommentSender {
                 .flatMap(pipelines.auditMailSender::loader)
                 // 文章作者通知
                 .flatMap(pipelines.commentPostOwnerMailSender::loader)
+                .subscribeOn(Schedulers.boundedElastic())
                 .then();
     }
 
@@ -67,6 +69,7 @@ public class CommentSender {
                 .flatMap(pipelines.commentPostOwnerMailSender::loader)
                 // 通知被回复的评论人
                 .flatMap(pipelines.replyTargetCommentUserMailSender::loader)
+                .subscribeOn(Schedulers.boundedElastic())
                 .then();
     }
 
@@ -78,7 +81,10 @@ public class CommentSender {
      */
     public Mono<Void> pipeline(Comment comment, Comment newComment) {
         // 修改前状态是未审核，修改后状态是已审核才是审核通过
-        if (!comment.getSpec().getApproved() && !newComment.getSpec().getApproved()) {
+        if (!comment.getSpec().getApproved()
+            && newComment.getSpec().getApproved()
+            && null == comment.getSpec().getApprovedTime()
+            && null != newComment.getSpec().getApprovedTime()) {
             return Mono.just(ReplyCommentContext.builder().comment(newComment).build())
                     // 加载评论设置
                     .flatMap(pipelines.commentSetting::loader)
@@ -94,6 +100,7 @@ public class CommentSender {
                     .flatMap(pipelines.commentUserAuditSuccessMailSender::loader)
                     // 文章作者通知
                     .flatMap(pipelines.commentPostOwnerMailSender::loader)
+                    .subscribeOn(Schedulers.boundedElastic())
                     .then();
         }
         return Mono.empty();
@@ -106,7 +113,10 @@ public class CommentSender {
      * @param newReply 修改后的回复
      */
     public Mono<Void> pipeline(Reply reply, Reply newReply) {
-        if (!reply.getSpec().getApproved() && !newReply.getSpec().getApproved()) {
+        if (!reply.getSpec().getApproved()
+            && newReply.getSpec().getApproved()
+            && null == reply.getSpec().getApprovedTime()
+            && null != newReply.getSpec().getApprovedTime()) {
             return Mono.just(ReplyCommentContext.builder().replyComment(newReply).build())
                     // 加载邮件服务配置
                     .flatMap(pipelines.mailServerConfig::loader)
@@ -128,6 +138,7 @@ public class CommentSender {
                     .flatMap(pipelines.commentPostOwnerMailSender::loader)
                     // 通知被回复的评论人
                     .flatMap(pipelines.replyTargetCommentUserMailSender::loader)
+                    .subscribeOn(Schedulers.boundedElastic())
                     .then();
         }
         return Mono.empty();

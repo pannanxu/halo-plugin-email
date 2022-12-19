@@ -1,8 +1,6 @@
 package io.mvvm.halo.plugins.email.support;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.boot.autoconfigure.mail.MailProperties;
 
 /**
  * MailConfig.
@@ -10,17 +8,41 @@ import org.springframework.boot.autoconfigure.mail.MailProperties;
  * @author: pan
  **/
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class MailServerConfig extends MailProperties {
+public class MailServerConfig {
 
     public static final String NAME = "mail-settings";
     public static final String GROUP = "basic";
-    
-    private boolean enable;
+
+    /**
+     * SMTP server host. For instance, 'smtp.example.com'.
+     */
+    private String host;
+
+    /**
+     * SMTP server port.
+     */
+    private Integer port;
+
+    /**
+     * Login user of the SMTP server.
+     */
+    private String username;
+
+    /**
+     * Login password of the SMTP server.
+     */
+    private String password;
+
+    /**
+     * Protocol used by the SMTP server.
+     */
+    private String protocol = "smtp";
+
+    private boolean enable = true;
 
     private String adminMail;
-    
+
     private String fromName;
 
-    private boolean enableTls;
+    private boolean enableTls = false;
 }
