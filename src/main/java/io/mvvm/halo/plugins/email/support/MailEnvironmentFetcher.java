@@ -67,7 +67,7 @@ public class MailEnvironmentFetcher {
 
     @NonNull
     private Mono<Map<String, String>> getValuesInternal(String name) {
-        return getConfigMap(SystemSetting.SYSTEM_CONFIG_DEFAULT)
+        return getConfigMap(name)
                 .filter(configMap -> configMap.getData() != null)
                 .map(ConfigMap::getData)
                 .defaultIfEmpty(Map.of());
