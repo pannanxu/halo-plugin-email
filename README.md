@@ -53,5 +53,4 @@ mailService.send(MailMessage message);
 ```
 ./gradlew -x build
 ```
-
-然后只需复制例如`build/libs/halo-plugin-email-1.0.0-alpha.2-plain.jar` 的 `jar` 包即可使用。
+然后只需复制例如`build/libs/halo-plugin-email-1.1.0.jar` 的 `jar` 包即可使用。
