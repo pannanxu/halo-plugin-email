@@ -28,7 +28,7 @@ spec:
           name: host
           validation: required
         - $formkit: text
-          help: "邮件服务器端口。如TSL：465."
+          help: "邮件服务器端口。如：465、587."
           label: Port
           name: port
           validation: required

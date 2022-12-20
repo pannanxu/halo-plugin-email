@@ -86,6 +86,7 @@ public class CommentPipelines {
                         .to(context.getServerConfig().getAdminMail())
                         .content(html)
                         .subject(CommentTemplateType.Audit.getDefinition().subject())
+                        .fromName(context.getServerConfig().getFromName())
                         .build())
                 .doOnNext(mailPublisher::publish)
                 .thenReturn(context);
@@ -106,6 +107,7 @@ public class CommentPipelines {
                         .to(context.getPostOwner().getSpec().getEmail())
                         .content(html)
                         .subject(CommentTemplateType.Comment.getDefinition().subject())
+                        .fromName(context.getServerConfig().getFromName())
                         .build())
                 .doOnNext(mailPublisher::publish)
                 .thenReturn(context);
@@ -128,6 +130,7 @@ public class CommentPipelines {
                         .to(context.getCommentUser().getSpec().getEmail())
                         .content(html)
                         .subject(CommentTemplateType.Reply.getDefinition().subject())
+                        .fromName(context.getServerConfig().getFromName())
                         .build())
                 .doOnNext(mailPublisher::publish)
                 .thenReturn(context);
@@ -146,6 +149,7 @@ public class CommentPipelines {
                         .to(email.get())
                         .content(html)
                         .subject(CommentTemplateType.AuditSuccess.getDefinition().subject())
+                        .fromName(context.getServerConfig().getFromName())
                         .build())
                 .doOnNext(mailPublisher::publish)
                 .thenReturn(context);
