@@ -1,8 +1,10 @@
 package io.mvvm.halo.plugins.email.support;
 
-import io.mvvm.halo.plugins.email.MailBeanContext;
 import io.mvvm.halo.plugins.email.MailMessage;
 import io.mvvm.halo.plugins.email.MailPublisher;
+import io.mvvm.halo.plugins.email.event.SendMailEvent;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,11 +12,18 @@ import org.springframework.stereotype.Component;
  *
  * @author: pan
  **/
+@Slf4j
 @Component
 public class SimpleMailPublisher implements MailPublisher {
-    @Override
-    public boolean publish(MailMessage message) {
-        MailBeanContext.MAIL_QUEUE_POOL.put(message);
-        return true;
+    private final ApplicationEventPublisher publisher;
+
+    public SimpleMailPublisher(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
     }
+
+    @Override
+    public void publish(MailMessage message) {
+        publisher.publishEvent(new SendMailEvent(this, message));
+    }
+
 }

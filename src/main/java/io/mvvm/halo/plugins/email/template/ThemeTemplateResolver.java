@@ -3,6 +3,7 @@ package io.mvvm.halo.plugins.email.template;
 import io.mvvm.halo.plugins.email.comment.CommentTemplateType;
 import io.mvvm.halo.plugins.email.comment.ReplyCommentContext;
 import io.mvvm.halo.plugins.email.support.MailEnvironmentFetcher;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ConcurrentLruCache;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
@@ -12,11 +13,12 @@ import reactor.core.publisher.Mono;
  *
  * @author: pan
  **/
+@Component
 public class ThemeTemplateResolver implements TemplateResolver {
     private static final int CACHE_SIZE_LIMIT = 5;
 
     private final ConcurrentLruCache<String, String> engineCache;
-    private MailEnvironmentFetcher fetcher;
+    private final MailEnvironmentFetcher fetcher;
 
     public ThemeTemplateResolver(MailEnvironmentFetcher fetcher) {
         this.fetcher = fetcher;

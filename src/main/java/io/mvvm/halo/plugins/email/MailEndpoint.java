@@ -1,7 +1,8 @@
 package io.mvvm.halo.plugins.email;
 
+import io.mvvm.halo.plugins.email.support.MailEnvironmentFetcher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -15,13 +16,15 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author: pan
  **/
-@Configuration
+@Component
 public class MailEndpoint {
 
     private final MailService mailService;
+    private final MailEnvironmentFetcher environmentFetcher;
 
-    public MailEndpoint(MailService mailService) {
+    public MailEndpoint(MailService mailService, MailEnvironmentFetcher environmentFetcher) {
         this.mailService = mailService;
+        this.environmentFetcher = environmentFetcher;
     }
 
     @Bean
@@ -31,8 +34,7 @@ public class MailEndpoint {
     }
 
     Mono<Boolean> testConnection() {
-        return MailBeanContext.environmentFetcher
-                .fetchMailServer()
+        return environmentFetcher.fetchMailServer()
                 .publishOn(Schedulers.boundedElastic())
                 .map(mailService::connection);
     }

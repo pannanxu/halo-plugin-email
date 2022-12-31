@@ -1,10 +1,11 @@
 package io.mvvm.halo.plugins.email.support;
 
-import io.mvvm.halo.plugins.email.MailBeanContext;
 import io.mvvm.halo.plugins.email.MailMessage;
 import io.mvvm.halo.plugins.email.MailSender;
 import io.mvvm.halo.plugins.email.MailService;
+import io.mvvm.halo.plugins.email.event.SendMailEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -20,10 +21,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class SimpleMailService implements MailService {
 
     private final AtomicReference<MailSender> sender = new AtomicReference<>();
-
-    public SimpleMailService() {
-        MailBeanContext.MAIL_QUEUE_POOL.start(this);
-    }
 
     @Override
     public Boolean connection(MailServerConfig config) {
@@ -53,6 +50,11 @@ public class SimpleMailService implements MailService {
             return false;
         }
         return sender.get().send(message);
+    }
+
+    @EventListener(SendMailEvent.class)
+    public void sendMailEvent(SendMailEvent event) {
+        send(event.getMessage());
     }
 
 }

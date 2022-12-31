@@ -1,7 +1,7 @@
 package io.mvvm.halo.plugins.email.comment;
 
-import io.mvvm.halo.plugins.email.MailPublisher;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import run.halo.app.core.extension.content.Comment;
@@ -13,12 +13,13 @@ import run.halo.app.core.extension.content.Reply;
  * @author: pan
  **/
 @Slf4j
+@Component
 public class CommentSender {
 
     private final CommentPipelines pipelines;
 
-    public CommentSender(MailPublisher mailPublisher) {
-        this.pipelines = new CommentPipelines(mailPublisher);
+    public CommentSender(CommentPipelines pipelines) {
+        this.pipelines = pipelines;
     }
 
     /**

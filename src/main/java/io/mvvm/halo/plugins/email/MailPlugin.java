@@ -1,13 +1,10 @@
 package io.mvvm.halo.plugins.email;
 
-import io.mvvm.halo.plugins.email.support.MailEnvironmentFetcher;
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginWrapper;
 import org.springframework.stereotype.Component;
 import run.halo.app.extension.ReactiveExtensionClient;
-import run.halo.app.infra.ExternalUrlSupplier;
 import run.halo.app.plugin.BasePlugin;
-import run.halo.app.plugin.SettingFetcher;
 
 /**
  * @author guqing
@@ -16,28 +13,21 @@ import run.halo.app.plugin.SettingFetcher;
 @Slf4j
 @Component
 public class MailPlugin extends BasePlugin {
-    public MailPublisher mailPublisher;
-    public MailService mailService;
+
+    private final ReactiveExtensionClient client;
+    private final MailWatcher mailWatcher;
 
     public MailPlugin(PluginWrapper wrapper,
                       ReactiveExtensionClient client,
-                      ExternalUrlSupplier externalUrlSupplier,
-                      SettingFetcher settingFetcher,
-                      MailEnvironmentFetcher environmentFetcher,
-                      MailPublisher mailPublisher,
-                      MailService mailService) {
+                      MailWatcher mailWatcher) {
         super(wrapper);
-        this.mailPublisher = mailPublisher;
-        this.mailService = mailService;
-        MailBeanContext.environmentFetcher = environmentFetcher;
-        MailBeanContext.externalUrlSupplier = externalUrlSupplier;
-        MailBeanContext.client = client;
-        MailBeanContext.settingFetcher = settingFetcher;
+        this.client = client;
+        this.mailWatcher = mailWatcher;
     }
 
     @Override
     public void start() {
-        MailBeanContext.client.watch(new MailWatcher(mailPublisher));
+        client.watch(mailWatcher);
     }
 
     @Override

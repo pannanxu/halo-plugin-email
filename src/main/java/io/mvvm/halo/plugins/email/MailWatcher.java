@@ -1,6 +1,7 @@
 package io.mvvm.halo.plugins.email;
 
 import io.mvvm.halo.plugins.email.comment.CommentSender;
+import org.springframework.stereotype.Component;
 import run.halo.app.core.extension.content.Comment;
 import run.halo.app.core.extension.content.Reply;
 import run.halo.app.extension.Extension;
@@ -11,12 +12,13 @@ import run.halo.app.extension.Watcher;
  *
  * @author: pan
  **/
+@Component
 public class MailWatcher implements Watcher {
 
     private final CommentSender commentSender;
 
-    public MailWatcher(MailPublisher mailPublisher) {
-        this.commentSender = new CommentSender(mailPublisher);
+    public MailWatcher(CommentSender commentSender) {
+        this.commentSender = commentSender;
     }
 
     @Override
