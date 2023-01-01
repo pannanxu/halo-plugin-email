@@ -44,8 +44,8 @@ public class SimpleMailService implements MailService {
             return false;
         }
         if (!StringUtils.hasLength(message.to())
-                || !StringUtils.hasLength(message.content())
-                || !StringUtils.hasLength(message.subject())) {
+            || !StringUtils.hasLength(message.content())
+            || !StringUtils.hasLength(message.subject())) {
             log.debug("邮件发送取消, 邮件参数错误.");
             return false;
         }
