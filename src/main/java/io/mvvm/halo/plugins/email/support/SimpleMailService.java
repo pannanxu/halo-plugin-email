@@ -33,7 +33,7 @@ public class SimpleMailService implements MailService {
             return mailSender.testConnection();
         } catch (Exception ex) {
             log.error("连接初始化失败: {}", ex.getMessage(), ex);
-            throw new RuntimeException("连接初始化失败: " + ex.getMessage(), ex);
+            throw new RuntimeException("连接初始化失败: " + ex.getMessage());
         }
     }
 

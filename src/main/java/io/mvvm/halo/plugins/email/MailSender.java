@@ -53,13 +53,13 @@ public class MailSender {
         try {
             if (sender instanceof JavaMailSenderImpl mailSender) {
                 mailSender.testConnection();
-                log.info("连接初始化成功: {}", this.sender);
+                log.debug("连接初始化成功: {}", this.sender);
             }
             return Boolean.TRUE;
         } catch (Exception ex) {
             log.error("连接初始化失败: {}", ex.getMessage(), ex);
+            throw new RuntimeException(ex);
         }
-        return Boolean.FALSE;
     }
 
     public Boolean send(MailMessage message) {
