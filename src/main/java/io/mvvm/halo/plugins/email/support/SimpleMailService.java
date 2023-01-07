@@ -26,15 +26,15 @@ public class SimpleMailService implements MailService {
     public Boolean connection(MailServerConfig config) {
         log.debug("连接初始化配置: {}", config);
         if (null == config) {
-            return Boolean.FALSE;
+            throw new RuntimeException("暂未初始化配置，请前往插件设置中配置后重试");
         }
         try {
             MailSender mailSender = sender.updateAndGet(old -> MailSender.createSender(config));
             return mailSender.testConnection();
         } catch (Exception ex) {
             log.error("连接初始化失败: {}", ex.getMessage(), ex);
+            throw new RuntimeException("连接初始化失败: " + ex.getMessage(), ex);
         }
-        return Boolean.FALSE;
     }
 
     @Override

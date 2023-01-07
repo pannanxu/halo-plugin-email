@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -33,10 +32,17 @@ public class MailEndpoint {
                 request -> testConnection().flatMap(result -> ServerResponse.ok().bodyValue(result)));
     }
 
-    Mono<Boolean> testConnection() {
+    Mono<Object> testConnection() {
         return environmentFetcher.fetchMailServer()
-                .publishOn(Schedulers.boundedElastic())
-                .map(mailService::connection);
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new RuntimeException("暂无配置，请前往插件设置中配置后重试"))))
+                .flatMap(setting -> {
+                    try {
+                        Boolean connection = mailService.connection(setting);
+                        return Mono.just(connection ? "配置成功" : "配置失败");
+                    } catch (Exception ex) {
+                        return Mono.error(ex);
+                    }
+                });
     }
 
 }
