@@ -24,28 +24,8 @@ Email plugin for Halo2.0
 
 邮件插件为第三方插件提供了API，可以自定义邮件发送逻辑
 
-### 方式一
-
-此方法异步实现，可以实现简单的邮件发送
-
 ```java
-// 注入接口
-@Resource
-private MailPublisher publisher;
-// 调用方法
-publisher.publish(MailMessage message);
-```
-
-### 方式二
-
-此方式发送会阻塞等待发送结果
-
-```java
-// 注入接口
-@Resource
-private MailService mailService;
-// 调用方法
-mailService.send(MailMessage message);
+MailContextHolder.publish(MailMessage message);
 ```
 
 ## 构建生产产物

@@ -7,6 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * SimpleMailPublisher.
  *
@@ -15,15 +20,29 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class SimpleMailPublisher implements MailPublisher {
-    private final ApplicationEventPublisher publisher;
+
+    private final Queue<MailMessage> queue = new ConcurrentLinkedQueue<>();
 
     public SimpleMailPublisher(ApplicationEventPublisher publisher) {
-        this.publisher = publisher;
+        Timer timer = new Timer("mail-publish-queue", true);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    if (null != queue.peek()) {
+                        MailMessage message = queue.poll();
+                        publisher.publishEvent(new SendMailEvent(this, message));
+                    }
+                } catch (Exception ignored) {
+
+                }
+            }
+        }, 3000, 1000);
     }
 
     @Override
     public void publish(MailMessage message) {
-        publisher.publishEvent(new SendMailEvent(this, message));
+        queue.add(message);
     }
 
 }
