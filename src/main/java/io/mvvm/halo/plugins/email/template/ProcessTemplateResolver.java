@@ -5,8 +5,8 @@ import io.mvvm.halo.plugins.email.comment.ReplyCommentContext;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringWebFluxTemplateEngine;
 import reactor.core.publisher.Mono;
-import run.halo.app.theme.engine.SpringWebFluxTemplateEngine;
 
 /**
  * 将邮件模板和上下文参数处理转换成待发送的html.
