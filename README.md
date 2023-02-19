@@ -33,7 +33,7 @@ MailHelper.publish(MailMessage message);
 ```yaml
 spec:
   pluginDependencies:
-    "halo-plugin-email": ">=2.2.0"
+    "halo-plugin-email": ">=1.1.2"
 ```
 
 2. 下载jar并引入
