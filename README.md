@@ -25,7 +25,37 @@ Email plugin for Halo2.0
 邮件插件为第三方插件提供了API，可以自定义邮件发送逻辑
 
 ```java
-MailContextHolder.publish(MailMessage message);
+MailHelper.publish(MailMessage message);
+```
+
+1. 添加插件的依赖(plugin.yaml)
+
+```yaml
+spec:
+  pluginDependencies:
+    "halo-plugin-email": ">=2.2.0"
+```
+
+2. 下载jar并引入
+
+```groovy
+compileOnly files("lib/halo-plugin-email-x.x.x.jar")
+```
+
+3. 发送式例
+
+```java
+SimpleMailMessage message = MailMessage.of("xxx@qq.com");
+message.setFromName("发送附件的名称");
+message.setContent("发送附件的内容");
+message.setSubject("发送附件的标题");
+// 如果需要添加附件则添加这行
+message.addAttachment(Attach.builder()
+    .name("xxx.png")
+    .source(new FileSystemResource("/root/xxx.png"))
+    .build());
+// 执行发送
+MailHelper.publish(message);
 ```
 
 ## 构建生产产物
