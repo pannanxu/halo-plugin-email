@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class MailConfig {
     
     @Bean
-    public MailContextHolder mailContextHolder() {
-        return new MailContextHolder();
+    public MailHelper mailHelper() {
+        return new MailHelper();
     }
     
 }

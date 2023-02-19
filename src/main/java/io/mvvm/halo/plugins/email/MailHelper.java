@@ -7,24 +7,24 @@ import org.springframework.context.ApplicationContextAware;
 import reactor.core.publisher.Mono;
 
 /**
- * MailContextHolder.
+ * MailHelper.
  *
  * @author: pan
  **/
-public class MailContextHolder implements ApplicationContextAware {
+public class MailHelper implements ApplicationContextAware {
 
     private static MailPublisher publisher;
 
     public static void publish(MailMessage message) {
-        MailContextHolder.publisher.publish(message);
+        MailHelper.publisher.publish(message);
     }
 
     public static Mono<Void> publishReactive(MailMessage message) {
-        return MailContextHolder.publisher.publishReactive(message);
+        return MailHelper.publisher.publishReactive(message);
     }
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext ctx) throws BeansException {
-        MailContextHolder.publisher = ctx.getBean(MailPublisher.class);
+        MailHelper.publisher = ctx.getBean(MailPublisher.class);
     }
 }

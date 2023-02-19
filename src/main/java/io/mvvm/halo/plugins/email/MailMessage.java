@@ -3,6 +3,8 @@ package io.mvvm.halo.plugins.email;
 import io.mvvm.halo.plugins.email.support.SimpleMailMessage;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -26,11 +28,19 @@ public interface MailMessage {
 
     String fromName();
 
+    default List<Attach> attaches() {
+        return new ArrayList<>();
+    }
+
     void setTo(String to);
 
     void setSubject(String subject);
 
     void setContent(String content);
+    
+    default void addAttachment(Attach attach) {
+        
+    }
     
     default boolean checkParams() {
         return StringUtils.hasLength(to()) && EMAIL_PATTERN.matcher(to()).matches();

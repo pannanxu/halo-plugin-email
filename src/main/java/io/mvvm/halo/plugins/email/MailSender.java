@@ -2,6 +2,7 @@ package io.mvvm.halo.plugins.email;
 
 import io.mvvm.halo.plugins.email.support.MailSenderFactory;
 import io.mvvm.halo.plugins.email.support.MailServerConfig;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +12,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * MailSender.
@@ -68,10 +71,30 @@ public class MailSender {
         }
         
         log.debug("准备发送邮件: {}", message);
-        // create mime message helper
-        MimeMessageHelper messageHelper = new MimeMessageHelper(sender.createMimeMessage());
 
         try {
+            List<Attach> attaches = message.attaches();
+            MimeMessageHelper messageHelper;
+            if (null == attaches || attaches.isEmpty()) {
+                messageHelper = new MimeMessageHelper(sender.createMimeMessage());
+            } else {
+                messageHelper = new MimeMessageHelper(sender.createMimeMessage(), true);
+
+                attaches.forEach(attach -> {
+                    if (null != attach.getSource()) {
+                        try {
+                            if (StringUtils.hasLength(attach.getContentType())) {
+                                messageHelper.addAttachment(attach.getName(), attach.getSource(), attach.getContentType());
+                            } else {
+                                messageHelper.addAttachment(attach.getName(), attach.getSource());
+                            }
+                        } catch (MessagingException e) {
+                            log.error("邮件添加附件失败, {}", e.getMessage(), e);
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+            }
             // set from-name
             messageHelper.setFrom(getFromAddress(sender, message.fromName()));
             // handle message set separately
