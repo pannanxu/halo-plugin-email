@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.User;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * SenderFetcher.
@@ -40,7 +41,7 @@ public class SenderFetcher {
             replyComment(context, sink);
             sink.complete();
         };
-        return Flux.create(consumer).flatMap(e -> e);
+        return Flux.create(consumer).flatMap(Function.identity());
     }
 
     private void adminReview(CommentContext context, FluxSink<Mono<MailMessage>> sink) {
@@ -50,15 +51,13 @@ public class SenderFetcher {
         if (base.requireReviewForNew()) {
             if (StringUtils.hasLength(base.getServerConfig().getAdminMail())) {
                 log.debug("SenderFetcher.adminReview. 通知管理员邮箱: {}", base.getServerConfig().getAdminMail());
-                sink.next(Mono.defer(() ->
-                        resolver.process(CommentTemplateType.Audit.getDefinition().path(), context)
-                                .map(html ->
-                                        SimpleMailMessage.builder()
-                                                .to(base.getServerConfig().getAdminMail())
-                                                .content(html)
-                                                .subject(CommentTemplateType.Audit.getDefinition().subject())
-                                                .fromName(base.getServerConfig().getFromName())
-                                                .build())));
+                sink.next(resolver.process(CommentTemplateType.Audit.getDefinition().path(), context)
+                        .map(html -> SimpleMailMessage.builder()
+                                .to(base.getServerConfig().getAdminMail())
+                                .content(html)
+                                .subject(CommentTemplateType.Audit.getDefinition().subject())
+                                .fromName(base.getServerConfig().getFromName())
+                                .build()));
             }
         }
     }
@@ -88,15 +87,13 @@ public class SenderFetcher {
             }
             log.debug("SenderFetcher.subjectAuthor. 通知 {} 作者: {}",
                     context.getCommentSubject().getKind(), subjectOwner.getSpec().getEmail());
-            sink.next(Mono.defer(() ->
-                    resolver.process(CommentTemplateType.Comment.getDefinition().path(), context)
-                            .map(html ->
-                                    SimpleMailMessage.builder()
-                                            .to(subjectOwner.getSpec().getEmail())
-                                            .content(html)
-                                            .subject(CommentTemplateType.Comment.getDefinition().subject())
-                                            .fromName(base.getServerConfig().getFromName())
-                                            .build())));
+            sink.next(resolver.process(CommentTemplateType.Comment.getDefinition().path(), context)
+                    .map(html -> SimpleMailMessage.builder()
+                            .to(subjectOwner.getSpec().getEmail())
+                            .content(html)
+                            .subject(CommentTemplateType.Comment.getDefinition().subject())
+                            .fromName(base.getServerConfig().getFromName())
+                            .build()));
 
         }
     }
@@ -118,15 +115,13 @@ public class SenderFetcher {
                 return;
             }
             log.debug("SenderFetcher.replyComment. 通知评论人: {}", owner.getSpec().getEmail());
-            sink.next(Mono.defer(() ->
-                    resolver.process(CommentTemplateType.Reply.getDefinition().path(), context)
-                            .map(html ->
-                                    SimpleMailMessage.builder()
-                                            .to(owner.getSpec().getEmail())
-                                            .content(html)
-                                            .subject(CommentTemplateType.Reply.getDefinition().subject())
-                                            .fromName(base.getServerConfig().getFromName())
-                                            .build())));
+            sink.next(resolver.process(CommentTemplateType.Reply.getDefinition().path(), context)
+                    .map(html -> SimpleMailMessage.builder()
+                            .to(owner.getSpec().getEmail())
+                            .content(html)
+                            .subject(CommentTemplateType.Reply.getDefinition().subject())
+                            .fromName(base.getServerConfig().getFromName())
+                            .build()));
         }
     }
 }
