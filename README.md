@@ -20,6 +20,16 @@ Email plugin for Halo2.0
 3. 进入 插件设置页面 配置邮件服务器信息
 4. 调用接口测试连接(true为成功,每次修改配置都需要进行测试): `http://ip:port/apis/io.mvvm.halo.plugins.email/testConnection`
 
+## 评论通知推送策略
+
+- 评论通知流程
+
+![评论通知流程](doc/images/comment_process.png)
+
+- 回复通知流程
+
+![回复通知流程](doc/images/reply_process.png)
+
 ## 第三方插件
 
 邮件插件为第三方插件提供了API，可以自定义邮件发送逻辑
