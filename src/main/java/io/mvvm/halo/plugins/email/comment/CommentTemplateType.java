@@ -36,4 +36,8 @@ public enum CommentTemplateType {
     @Getter
     private final MailTemplateDefinition definition;
 
+    public record MailTemplateDefinition(String name, String subject, String path) {
+
+    }
+
 }

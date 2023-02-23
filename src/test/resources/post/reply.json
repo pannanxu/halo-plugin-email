@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "raw": "huifu",
+    "content": "huifu",
+    "owner": {
+      "kind": "User",
+      "name": "admin",
+      "displayName": "Administrator"
+    },
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+    "ipAddress": "0:0:0:0:0:0:0:1",
+    "priority": 0,
+    "top": false,
+    "allowNotification": true,
+    "approved": false,
+    "hidden": false,
+    "commentName": "e72b6131-1b1a-4f93-b23b-390703c5cd1a"
+  },
+  "apiVersion": "content.halo.run/v1alpha1",
+  "kind": "Reply",
+  "metadata": {
+    "name": "c1395e1c-c5b9-4c53-af5c-97b825c8aa34",
+    "version": 0,
+    "creationTimestamp": "2023-02-23T07:46:32.718389Z"
+  }
+}

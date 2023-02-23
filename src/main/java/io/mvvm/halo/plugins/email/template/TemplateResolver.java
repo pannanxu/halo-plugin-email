@@ -1,7 +1,11 @@
 package io.mvvm.halo.plugins.email.template;
 
-import io.mvvm.halo.plugins.email.comment.CommentTemplateType;
-import io.mvvm.halo.plugins.email.comment.ReplyCommentContext;
+import io.mvvm.halo.plugins.email.comment.CommentContext;
+import io.mvvm.halo.plugins.email.template.loader.TemplateLoader;
+import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringWebFluxTemplateEngine;
 import reactor.core.publisher.Mono;
 
 /**
@@ -9,8 +13,23 @@ import reactor.core.publisher.Mono;
  *
  * @author: pan
  **/
-public interface TemplateResolver {
+@Component
+public class TemplateResolver {
 
-    Mono<String> processReactive(CommentTemplateType template, ReplyCommentContext variables);
+    private final TemplateLoader loader;
+
+    private final ISpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
+
+    public TemplateResolver(TemplateLoader loader) {
+        this.loader = loader;
+    }
+
+    public Mono<String> process(String path, CommentContext ctx) {
+        return loader.load(path).map(content -> {
+            Context context = new Context();
+            context.setVariable("ctx", ctx);
+            return engine.process(content, context);
+        });
+    }
 
 }

@@ -4,7 +4,6 @@ import lombok.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import reactor.core.publisher.Mono;
 
 /**
  * MailHelper.
@@ -17,10 +16,6 @@ public class MailHelper implements ApplicationContextAware {
 
     public static void publish(MailMessage message) {
         MailHelper.publisher.publish(message);
-    }
-
-    public static Mono<Void> publishReactive(MailMessage message) {
-        return MailHelper.publisher.publishReactive(message);
     }
 
     @Override
